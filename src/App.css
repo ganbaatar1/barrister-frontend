@@ -1,0 +1,21 @@
+// 📁 src/App.jsx
+import "./index.css";
+import AppRouter from "./Router";
+import { HelmetProvider } from "react-helmet-async";
+import { ThemeProvider } from "./contexts/ThemeContext";
+import { Toaster } from "react-hot-toast"; // ✅ Toast нэмэх
+
+function App() {
+  return (
+    <HelmetProvider>
+      <ThemeProvider>
+        <div className="bg-light text-secondary min-h-screen flex flex-col">
+          <AppRouter />
+          <Toaster position="top-right" reverseOrder={false} /> {/* ✅ Toast дэлгэцэнд нэмэгдэнэ */}
+        </div>
+      </ThemeProvider>
+    </HelmetProvider>
+  );
+}
+
+export default App;

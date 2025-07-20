@@ -1,0 +1,19 @@
+/* 📁 src/styles/common.css */
+input,
+textarea,
+select,
+button {
+  @apply focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-150 ease-in-out;
+}
+
+button {
+  @apply px-4 py-2 rounded;
+}
+
+.modal-overlay {
+  @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50;
+}
+
+.modal-content {
+  @apply bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-lg;
+}
