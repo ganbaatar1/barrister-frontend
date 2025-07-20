@@ -1,0 +1,86 @@
+{
+  "nav": {
+    "home": "Нүүр",
+    "news": "Мэдээ",
+    "lawyers": "Хуульчид",
+    "contact": "Холбоо",
+    "login": "Нэвтрэх",
+    "register": "Бүртгүүлэх",
+    "admin": "Админ",
+    "advice": "Зөвлөгөө",
+    "testimonials": "Сэтгэгдлүүд",
+    "logout": "Гарах"
+  },
+  "news": {
+    "title": "Хууль эрх зүйн мэдээ",
+    "empty": "Одоогоор мэдээ байхгүй байна.",
+    "readMore": "Дэлгэрэнгүй унших"
+  },
+  "advice": {
+    "title": "Гарчиг",
+    "content": "Зөвлөгөөний агуулга",
+    "advice_page_title": "Зөвлөгөөний хуудас",
+    "no_advice_found": "Зөвлөгөө олдсонгүй"
+  },
+  "lawyer": {
+    "name": "Нэр",
+    "bio": "Намтар",
+    "specialty": "Мэргэшсэн чиглэл"
+  },
+  "contact": {
+    "name": "Таны нэр",
+    "email": "И-мэйл",
+    "message": "Зурвас",
+    "submit": "Илгээх"
+  },
+  "login": {
+    "title": "Нэвтрэх",
+    "email": "И-мэйл",
+    "password": "Нууц үг",
+    "submit": "Нэвтрэх"
+  },
+  "register": {
+    "title": "Бүртгүүлэх",
+    "name": "Нэр",
+    "email": "И-мэйл",
+    "password": "Нууц үг",
+    "submit": "Бүртгүүлэх"
+  },
+  "chat": {
+    "title": "Чат",
+    "send": "Илгээх",
+    "placeholder": "Зурвас бичих..."
+  },
+  "dashboard": {
+    "title": "Хяналтын самбар",
+    "welcome": "Тавтай морил"
+  },
+  "testimonials": {
+    "empty": "Одоогоор сэтгэгдэл байхгүй байна"
+  },
+  "edit": "Засах",
+  "add": "Нэмэх",
+  "delete": "Устгах",
+  "loading": "Ачааллаж байна...",
+  "not_found": "Олдсонгүй",
+  "footer": {
+    "rights_reserved": "Бүх эрх хуулиар хамгаалагдсан."
+  },
+  "admin": {
+    "contact_settings": {
+      "title": "Холбоо барих мэдээлэл",
+      "phone": "Утасны дугаар",
+      "email": "Имэйл хаяг",
+      "map_url": "Google Maps хаяг",
+      "address": "Хаяг",
+      "social_links": "Сошиал холбоосууд",
+      "social_name": "Сошиал нэр",
+      "social_url": "Холбоос URL",
+      "saved_successfully": "Амжилттай хадгалагдлаа",
+      "save_error": "Хадгалахад алдаа гарлаа",
+      "error_loading_settings": "Мэдээлэл татаж чадсангүй",
+      "no_socials": "Сошиал холбоос байхгүй байна",
+      "social_link_required": "Сошиал нэр болон холбоос хоосон байж болохгүй"
+    }
+  }
+}

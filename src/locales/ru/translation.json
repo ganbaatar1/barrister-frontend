@@ -1,0 +1,84 @@
+{
+  "nav": {
+    "home": "Главная",
+    "news": "Новости",
+    "lawyers": "Юристы",
+    "contact": "Контакты",
+    "login": "Войти",
+    "register": "Регистрация",
+    "admin": "Админ",
+    "advice": "Советы",
+    "testimonials": "Отзывы",
+    "logout": "Выйти"
+  },
+  "news": {
+    "title": "Правовые новости",
+    "empty": "На данный момент новостей нет.",
+    "readMore": "Читать далее"
+  },
+  "advice": {
+    "title": "Заголовок",
+    "content": "Содержание совета"
+  },
+  "lawyer": {
+    "name": "Имя",
+    "bio": "Биография",
+    "specialty": "Специализация"
+  },
+  "contact": {
+    "name": "Ваше имя",
+    "email": "Электронная почта",
+    "message": "Сообщение",
+    "submit": "Отправить"
+  },
+  "login": {
+    "title": "Вход",
+    "email": "Электронная почта",
+    "password": "Пароль",
+    "submit": "Войти"
+  },
+  "register": {
+    "title": "Регистрация",
+    "name": "Имя",
+    "email": "Электронная почта",
+    "password": "Пароль",
+    "submit": "Зарегистрироваться"
+  },
+  "chat": {
+    "title": "Чат",
+    "send": "Отправить",
+    "placeholder": "Введите сообщение..."
+  },
+  "dashboard": {
+    "title": "Панель управления",
+    "welcome": "Добро пожаловать"
+  },
+  "testimonials": {
+    "empty": "Пока нет отзывов"
+  },
+  "edit": "Редактировать",
+  "add": "Добавить",
+  "delete": "Удалить",
+  "loading": "Загрузка...",
+  "not_found": "Не найдено",
+  "footer": {
+    "rights_reserved": "Все права защищены."
+  },
+  "admin": {
+    "contact_settings": {
+      "title": "Контактная информация",
+      "phone": "Телефон",
+      "email": "Электронная почта",
+      "map_url": "Ссылка Google Maps",
+      "address": "Адрес",
+      "social_links": "Социальные ссылки",
+      "social_name": "Название соцсети",
+      "social_url": "Ссылка",
+      "saved_successfully": "Успешно сохранено",
+      "save_error": "Ошибка при сохранении",
+      "error_loading_settings": "Не удалось загрузить данные",
+      "no_socials": "Нет социальных ссылок",
+      "social_link_required": "Платформа и ссылка не могут быть пустыми"
+    }
+  }
+}
