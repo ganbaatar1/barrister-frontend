@@ -25,7 +25,9 @@ function Testimonials() {
       });
   }, [t]);
 
-  const testimonials = useDecodedTexts(rawTestimonials);
+  // const testimonials = useDecodedTexts(rawTestimonials);
+const testimonials = rawTestimonials; // түр хасав
+
 
   return (
     <>
