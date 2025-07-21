@@ -4,6 +4,9 @@ import axios from "axios";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 
+const API_BASE =
+  process.env.REACT_APP_API_BASE_URL || "https://barrister-backend.onrender.com/api";
+
 function AdviceDetails() {
   const { id } = useParams();
   const { t } = useTranslation();
@@ -13,7 +16,7 @@ function AdviceDetails() {
   useEffect(() => {
     const fetchAdvice = async () => {
       try {
-        const res = await axios.get(`/api/advice/${id}`);
+        const res = await axios.get(`${API_BASE}/advice/${id}`);
         setAdvice(res.data);
       } catch (err) {
         console.error("Зөвлөгөө татахад алдаа:", err);
@@ -51,12 +54,12 @@ function AdviceDetails() {
         <title>{advice.seoTitle || advice.title}</title>
         <meta
           name="description"
-          content={advice.seoDescription || advice.content?.slice(0, 150)}
+          content={advice.seoDescription || advice.description?.slice(0, 150)}
         />
         <meta property="og:title" content={advice.title} />
         <meta
           property="og:description"
-          content={advice.seoDescription || advice.content?.slice(0, 150)}
+          content={advice.seoDescription || advice.description?.slice(0, 150)}
         />
         {shareImage && <meta property="og:image" content={shareImage} />}
         <meta property="og:url" content={siteUrl} />
@@ -70,7 +73,7 @@ function AdviceDetails() {
 
       <div
         className="prose dark:prose-invert max-w-none mt-4"
-        dangerouslySetInnerHTML={{ __html: advice.content }}
+        dangerouslySetInnerHTML={{ __html: advice.description }}
       />
     </div>
   );

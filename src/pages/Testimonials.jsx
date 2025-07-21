@@ -3,7 +3,8 @@ import { getTestimonials } from "../api/testimonial";
 import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet-async";
 import useDecodedTexts from "../utils/useDecodedText";
-
+const API_BASE =
+  process.env.REACT_APP_API_BASE_URL || "https://barrister-backend.onrender.com/api";
 function Testimonials() {
   const { t } = useTranslation();
   const [rawTestimonials, setRawTestimonials] = useState([]);
@@ -25,8 +26,8 @@ function Testimonials() {
       });
   }, [t]);
 
-  // const testimonials = useDecodedTexts(rawTestimonials);
-const testimonials = rawTestimonials; // түр хасав
+  const testimonials = useDecodedTexts(rawTestimonials);
+//const testimonials = rawTestimonials; // түр хасав
 
 
   return (

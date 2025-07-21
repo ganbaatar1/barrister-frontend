@@ -4,7 +4,8 @@ import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import useDecodedTexts from "../utils/useDecodedText";
-
+const API_BASE =
+  process.env.REACT_APP_API_BASE_URL || "https://barrister-backend.onrender.com/api";
 const fallbackImage = "/default-image.jpg";
 
 function News() {
