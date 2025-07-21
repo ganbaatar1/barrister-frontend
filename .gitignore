@@ -23,3 +23,6 @@ yarn-debug.log*
 yarn-error.log*
 # Sensitive key файл
 backend/config/firebase-service-account.json
+firebase-service-account.json.bak
+Archive.zip
+barrister-backend-updated.zip
