@@ -14,7 +14,11 @@ function News() {
   useEffect(() => {
     axios
       .get("/api/news")
-      .then((res) => setRawNewsList(res.data || []))
+      .then((res) => {
+        console.log("✅ Хариу:", res.data);
+        const newsArray = Array.isArray(res.data?.data) ? res.data.data : [];
+        setRawNewsList(newsArray);
+      })
       .catch((err) => console.error("⚠️ Мэдээ татах үед алдаа:", err));
   }, []);
 
@@ -30,13 +34,6 @@ function News() {
   const getExcerpt = (html = "", maxLength = 140) => {
     const text = html.replace(/<[^>]*>?/gm, "");
     return text.length > maxLength ? text.slice(0, maxLength) + "…" : text;
-  };
-
-  const handleShareFacebook = (newsId, title) => {
-    const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-      `https://barrister.mn/news/${newsId}`
-    )}&quote=${encodeURIComponent(title || "")}`;
-    window.open(shareUrl, "_blank");
   };
 
   return (
@@ -80,14 +77,6 @@ function News() {
                       {excerpt}
                     </p>
                   </Link>
-
-                  {/* ✅ Facebook хуваалцах товч */}
-                  <button
-                    onClick={() => handleShareFacebook(item._id, item.title)}
-                    className="mt-auto inline-block text-sm text-blue-600 hover:underline"
-                  >
-                    Facebook-д хуваалцах
-                  </button>
                 </div>
               );
             })}
