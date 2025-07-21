@@ -16,7 +16,8 @@ function News() {
       .get("/api/news")
       .then((res) => {
         console.log("✅ Хариу:", res.data);
-        const newsArray = Array.isArray(res.data?.data) ? res.data.data : [];
+        // res.data нь шууд массив байна, data талбар байхгүй!
+        const newsArray = Array.isArray(res.data) ? res.data : [];
         setRawNewsList(newsArray);
       })
       .catch((err) => console.error("⚠️ Мэдээ татах үед алдаа:", err));

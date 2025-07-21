@@ -13,11 +13,13 @@ function Testimonials() {
   useEffect(() => {
     getTestimonials()
       .then((res) => {
-        setRawTestimonials(res.data || []);
+        console.log("✅ Testimonials API response:", res.data);
+        // API шууд массив буцааж байвал:
+        setRawTestimonials(Array.isArray(res.data) ? res.data : []);
         setLoading(false);
       })
       .catch((err) => {
-        console.error(err);
+        console.error("❌ Testimonials API error:", err);
         setError(t("testimonials.error") || "Алдаа гарлаа");
         setLoading(false);
       });
@@ -51,7 +53,7 @@ function Testimonials() {
         {!loading && !error && (
           <div className="space-y-6">
             {testimonials.length === 0 ? (
-              <p>{t("testimonials.empty")}</p>
+              <p>{t("testimonials.empty") || "Сэтгэгдэл олдсонгүй"}</p>
             ) : (
               testimonials.map((item) => (
                 <div
@@ -60,12 +62,16 @@ function Testimonials() {
                 >
                   {item.photo ? (
                     <img
-                      src={item.photo}
+                      src={
+                        item.photo.startsWith("http")
+                          ? item.photo
+                          : `${process.env.REACT_APP_API_BASE_URL || "https://barrister-backend.onrender.com/api"}${item.photo}`
+                      }
                       alt={`${item.name || "Үйлчлүүлэгч"} зураг`}
                       className="w-16 h-16 rounded-full object-cover"
                     />
                   ) : (
-                    <div className="w-16 h-16 rounded-full bg-gray-300 flex items-center justify-center text-gray-600">
+                    <div className="w-16 h-16 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 font-bold text-xl">
                       {(item.name?.charAt(0).toUpperCase()) || "?"}
                     </div>
                   )}
