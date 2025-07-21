@@ -12,6 +12,7 @@ function AdviceAdmin() {
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
   const [currentAdvice, setCurrentAdvice] = useState({
     title: "",
+    description: "",
     content: "",
     seoTitle: "",
     seoDescription: "",
@@ -50,6 +51,7 @@ function AdviceAdmin() {
       setShowModal(false);
       setCurrentAdvice({
         title: "",
+        description: "",
         content: "",
         seoTitle: "",
         seoDescription: "",
@@ -113,6 +115,7 @@ function AdviceAdmin() {
           onClick={() => {
             setCurrentAdvice({
               title: "",
+              description: "",
               content: "",
               seoTitle: "",
               seoDescription: "",
@@ -131,7 +134,12 @@ function AdviceAdmin() {
           className="border p-2 mb-4 rounded shadow bg-white dark:bg-gray-800"
         >
           <div className="font-bold">{a.title}</div>
-          <div className="text-sm text-gray-600 dark:text-gray-300 mb-1">
+          {a.description && (
+            <div className="text-sm text-gray-800 dark:text-gray-300 mb-1">
+              {a.description}
+            </div>
+          )}
+          <div className="text-sm text-gray-500 dark:text-gray-400 italic mb-1">
             {a.seoDescription}
           </div>
           <div className="flex gap-2 mt-2">
@@ -177,6 +185,13 @@ function AdviceAdmin() {
               label="Гарчиг"
               value={currentAdvice.title}
               onChange={handleInputChange}
+            />
+            <TextArea
+              name="description"
+              label="Тайлбар"
+              value={currentAdvice.description}
+              onChange={handleInputChange}
+              rows={3}
             />
             <TextArea
               name="content"
