@@ -5,7 +5,8 @@ import useDecodedTexts from "../utils/useDecodedText";
 
 const API_BASE =
   process.env.REACT_APP_API_BASE_URL || "http://localhost:5050/api";
-
+const STATIC_URL =
+  process.env.REACT_APP_STATIC_URL; 
 function Lawyers() {
   const [rawLawyers, setRawLawyers] = useState([]);
 
@@ -55,7 +56,7 @@ function Lawyers() {
                     l.profilePhoto
                       ? l.profilePhoto.startsWith("http")
                         ? l.profilePhoto
-                        : `${API_ORIGIN}${l.profilePhoto}`
+                        : `${STATIC_URL}${l.profilePhoto}`
                       : "/default-profile.png"
                   }
                   alt={`${l.firstName || ""} ${l.lastName || ""}`}
