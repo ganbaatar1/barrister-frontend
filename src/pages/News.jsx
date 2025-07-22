@@ -7,6 +7,12 @@ import useDecodedTexts from "../utils/useDecodedText";
 const API_BASE =
   process.env.REACT_APP_API_BASE_URL || "http://localhost:5050/api";
 const fallbackImage = "/default-image.jpg";
+const getImageUrl = (path) => {
+  if (!path) return fallbackImage;
+  return path.startsWith("http")
+    ? path
+    : `${process.env.REACT_APP_STATIC_URL}${path}`;
+};
 
 function News() {
   const { t } = useTranslation();
@@ -65,7 +71,7 @@ function News() {
                 >
                   <Link to={`/news/${item._id}`}>
                     <img
-                      src={item.image || fallbackImage}
+                      src={getImageUrl(item.image)}
                       alt={item.title || "Мэдээ"}
                       className="w-full h-40 object-cover mb-3 rounded"
                     />
