@@ -14,8 +14,7 @@ function News() {
 
   useEffect(() => {
     axios
-      axios
-  .get(`${API_BASE}/news`)
+    .get(`${API_BASE}/news`)
       .then((res) => {
         console.log("✅ Хариу:", res.data);
         // res.data нь шууд массив байна, data талбар байхгүй!
