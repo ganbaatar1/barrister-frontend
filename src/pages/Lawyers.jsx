@@ -55,7 +55,7 @@ function Lawyers() {
                     l.profilePhoto
                       ? l.profilePhoto.startsWith("http")
                         ? l.profilePhoto
-                        : `${API_BASE}${l.profilePhoto}`
+                        : `${API_ORIGIN}${l.profilePhoto}`
                       : "/default-profile.png"
                   }
                   alt={`${l.firstName || ""} ${l.lastName || ""}`}
