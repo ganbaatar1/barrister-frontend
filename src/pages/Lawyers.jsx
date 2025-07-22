@@ -19,8 +19,8 @@ function Lawyers() {
       .catch((err) => console.error("❌ Хуульчид татахад алдаа:", err));
   }, []);
 
-  const lawyers = useDecodedTexts(rawLawyers);
-
+  //const lawyers = useDecodedTexts(rawLawyers);
+const lawyers = rawLawyers; // түр хасав
   return (
     <>
       <Helmet>
