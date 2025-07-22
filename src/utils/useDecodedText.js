@@ -2,9 +2,8 @@ import { useMemo } from "react";
 import { decodeHTMLEntities } from "../utils/decodeEntities";
 
 /**
- * Утгуудыг массив эсвэл объект хэлбэрээр авч, string болгож decode хийнэ.
  * @param {any[] | Record<string, any>} rawTexts
- * @returns {string[] | Record<string, string>}
+ * @returns {any[] | Record<string, any>}
  */
 export default function useDecodedTexts(rawTexts) {
   const toSafeString = (val) => {
@@ -12,19 +11,18 @@ export default function useDecodedTexts(rawTexts) {
     return decodeHTMLEntities(String(val));
   };
 
-  return useMemo(() => {
-    if (Array.isArray(rawTexts)) {
-      return rawTexts.map(toSafeString);
-    }
-
-    if (typeof rawTexts === "object" && rawTexts !== null) {
-      const decodedObj = {};
-      for (const key in rawTexts) {
-        decodedObj[key] = toSafeString(rawTexts[key]);
+  const decodeDeep = (value) => {
+    if (typeof value === "string") return toSafeString(value);
+    if (Array.isArray(value)) return value.map(decodeDeep);
+    if (typeof value === "object" && value !== null) {
+      const result = {};
+      for (const key in value) {
+        result[key] = decodeDeep(value[key]);
       }
-      return decodedObj;
+      return result;
     }
+    return value;
+  };
 
-    return rawTexts;
-  }, [rawTexts]);
+  return useMemo(() => decodeDeep(rawTexts), [rawTexts]);
 }
