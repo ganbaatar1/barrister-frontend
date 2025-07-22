@@ -5,7 +5,7 @@ import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 
 const API_BASE =
-  process.env.REACT_APP_API_BASE_URL || "https://barrister-backend.onrender.com/api";
+  process.env.REACT_APP_API_BASE_URL || "http://localhost:5050/api";
 
 function AdviceDetails() {
   const { id } = useParams();

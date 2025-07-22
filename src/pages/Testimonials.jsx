@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet-async";
 import useDecodedTexts from "../utils/useDecodedText";
 const API_BASE =
-  process.env.REACT_APP_API_BASE_URL || "https://barrister-backend.onrender.com/api";
+  process.env.REACT_APP_API_BASE_URL || "http://localhost:5050/api";
 function Testimonials() {
   const { t } = useTranslation();
   const [rawTestimonials, setRawTestimonials] = useState([]);
