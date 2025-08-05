@@ -1,4 +1,7 @@
-const mongoose = require("mongoose");
+const HomeImageSchema = new mongoose.Schema({
+  url: { type: String, required: true },
+  caption: { type: String }, // тайлбар
+});
 
 const HomeContentSchema = new mongoose.Schema({
   about: { type: String, required: true },
@@ -6,7 +9,7 @@ const HomeContentSchema = new mongoose.Schema({
   vision: { type: String, required: true },
   principles: { type: String },
   services: { type: String },
-  image: { type: String },
+  images: [HomeImageSchema], // 🆕 олон зураг хадгалах
 });
 
 module.exports = mongoose.model("HomeContent", HomeContentSchema);

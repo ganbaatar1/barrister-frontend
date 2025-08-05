@@ -2,14 +2,15 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { getHomeContent } from "../api/home";
 import { Helmet } from "react-helmet-async";
-import useDecodedTexts from "../utils/useDecodedText"; // ✅ Нэмсэн
+import useDecodedTexts from "../utils/useDecodedText";
+import Slider from "react-slick";
 
 const BASE_API = process.env.REACT_APP_API_BASE_URL || "http://localhost:5050/api";
 const IMAGE_BASE = BASE_API.replace("/api", "");
 
 function Home() {
   const [rawContent, setRawContent] = useState({
-    image: "",
+    images: [],
     about: "",
     mission: "",
     vision: "",
@@ -23,7 +24,6 @@ function Home() {
     });
   }, []);
 
-  // ✅ content-г decode хийж авна
   const content = useDecodedTexts(rawContent);
 
   const Section = ({ title, html }) => (
@@ -44,6 +44,17 @@ function Home() {
     </motion.section>
   );
 
+  const sliderSettings = {
+    dots: true,
+    infinite: true,
+    autoplay: true,
+    autoplaySpeed: 5000,
+    speed: 1000,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    fade: true,
+  };
+
   return (
     <>
       <Helmet>
@@ -60,13 +71,24 @@ function Home() {
       </Helmet>
 
       <div className="bg-gray-100 dark:bg-gray-900">
-        {content.image && (
-          <div className="max-w-7xl mx-auto">
-            <img
-              src={`${IMAGE_BASE}${content.image}`}
-              alt="Home banner"
-              className="w-full max-h-[500px] object-cover rounded-b-xl shadow"
-            />
+        {content.images?.length > 0 && (
+          <div className="relative">
+            <Slider {...sliderSettings}>
+              {content.images.map((img, idx) => (
+                <div key={idx} className="relative">
+                  <img
+                    src={`${IMAGE_BASE}${img.url}`}
+                    alt={`Slide ${idx}`}
+                    className="w-full h-[90vh] object-cover"
+                  />
+                  {img.caption && (
+                    <div className="absolute bottom-0 w-full bg-black/60 text-white p-4 text-center text-xl">
+                      {img.caption}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </Slider>
           </div>
         )}
 

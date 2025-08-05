@@ -17,11 +17,9 @@ function HomeAdmin() {
     vision: "",
     principles: "",
     services: "",
-    image: "",
+    images: [], // 🆕 олон зураг
   });
 
-  const [image, setImage] = useState(null);
-  const [preview, setPreview] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -29,8 +27,11 @@ function HomeAdmin() {
       try {
         const res = await getHomeContent();
         if (res.data) {
-          setFormData(res.data);
-          setPreview(res.data.image || "");
+          setFormData((prev) => ({
+            ...prev,
+            ...res.data,
+            images: res.data.images || [],
+          }));
         }
       } catch (err) {
         toast.error("Мэдээлэл татахад алдаа гарлаа");
@@ -43,32 +44,48 @@ function HomeAdmin() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    setImage(file);
-    setPreview(URL.createObjectURL(file));
+  const handleImageUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    const uploaded = [];
+
+    for (const file of files) {
+      const form = new FormData();
+      form.append("image", file);
+      const res = await uploadHomeImage(form);
+      uploaded.push({ url: res.data.path, caption: "" });
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      images: [...prev.images, ...uploaded],
+    }));
+  };
+
+  const handleCaptionChange = (index, caption) => {
+    const updatedImages = [...formData.images];
+    updatedImages[index].caption = caption;
+    setFormData({ ...formData, images: updatedImages });
+  };
+
+  const handleImageDelete = (index) => {
+    const updated = [...formData.images];
+    updated.splice(index, 1);
+    setFormData({ ...formData, images: updated });
   };
 
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      let imageUrl = formData.image || "";
-
-      if (image) {
-        const form = new FormData();
-        form.append("image", image);
-        const res = await uploadHomeImage(form);
-        imageUrl = res.data.path;
-      }
-
-      const payload = { ...formData, image: imageUrl };
-      const res = await updateHomeContent(payload);
+      const res = await updateHomeContent(formData);
 
       if (res.status === 200) {
         toast.success("Амжилттай хадгалагдлаа");
         const refreshed = await getHomeContent();
-        setFormData(refreshed.data);
-        setPreview(refreshed.data.image || "");
+        setFormData((prev) => ({
+          ...prev,
+          ...refreshed.data,
+          images: refreshed.data.images || [],
+        }));
       } else {
         toast.error("Серверээс алдаатай хариу ирлээ");
       }
@@ -85,15 +102,34 @@ function HomeAdmin() {
       <h2 className="text-2xl font-bold">Нүүр хуудасны агуулга удирдах</h2>
 
       <div className="space-y-4">
-        <label className="font-semibold">Нүүр зураг</label>
-        <input type="file" accept="image/*" onChange={handleImageChange} />
-        {preview && (
-          <img
-            src={preview.startsWith("blob:") ? preview : `http://localhost:5050${preview}`}
-            alt="Preview"
-            className="max-h-40 mt-2 rounded border shadow"
-          />
-        )}
+        <label className="font-semibold">Нүүр зургууд (Slideshow)</label>
+        <input type="file" multiple accept="image/*" onChange={handleImageUpload} />
+
+        {formData.images.map((img, index) => (
+          <div key={index} className="mt-4 flex flex-col sm:flex-row items-start gap-4 border p-2 rounded shadow-sm bg-gray-50">
+            <img
+              src={`http://localhost:5050${img.url}`}
+              alt={`Banner ${index}`}
+              className="w-40 h-24 object-cover rounded border"
+            />
+            <div className="flex-1">
+              <label className="block text-sm font-medium mb-1">Тайлбар</label>
+              <input
+                type="text"
+                value={img.caption}
+                onChange={(e) => handleCaptionChange(index, e.target.value)}
+                className="w-full border px-3 py-2 rounded"
+                placeholder="Тайлбар бичих..."
+              />
+            </div>
+            <button
+              onClick={() => handleImageDelete(index)}
+              className="text-red-600 font-bold hover:underline"
+            >
+              Устгах
+            </button>
+          </div>
+        ))}
 
         <div>
           <label className="font-semibold">Бидний тухай</label>

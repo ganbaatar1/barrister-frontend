@@ -3,10 +3,13 @@ import axiosInstance from "./axiosInstance";
 // ✅ Нүүр хуудасны агуулга авах
 export const getHomeContent = () => axiosInstance.get("/home");
 
-// ✅ Нүүр хуудасны агуулга шинэчлэх
-export const updateHomeContent = (data) => axiosInstance.put("/home", data);
+// ✅ Нүүр хуудасны агуулга шинэчлэх (олон зурагтай)
+export const updateHomeContent = (data) => {
+  // data.images = [{ url: "/uploads/home/image.jpg", caption: "..." }, ...]
+  return axiosInstance.put("/home", data);
+};
 
-// ✅ Зураг байршуулах (formData ашиглан, content-type override хийж)
+// ✅ Зураг байршуулах (олон зураг → нэг бүрчлэн formData-аар дамжуулна)
 export const uploadHomeImage = (formData) =>
   axiosInstance.post("/home/upload-image", formData, {
     headers: {
