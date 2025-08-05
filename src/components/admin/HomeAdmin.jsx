@@ -10,6 +10,8 @@ import toast from "react-hot-toast";
 import quillModules from "../../utils/quillModules";
 import quillFormats from "../../utils/quillFormats";
 
+const IMAGE_BASE_URL = process.env.REACT_APP_IMAGE_BASE_URL || "http://localhost:5050";
+
 function HomeAdmin() {
   const [formData, setFormData] = useState({
     about: "",
@@ -17,7 +19,7 @@ function HomeAdmin() {
     vision: "",
     principles: "",
     services: "",
-    images: [], // 🆕 олон зураг
+    images: [],
   });
 
   const [loading, setLoading] = useState(false);
@@ -106,9 +108,12 @@ function HomeAdmin() {
         <input type="file" multiple accept="image/*" onChange={handleImageUpload} />
 
         {formData.images.map((img, index) => (
-          <div key={index} className="mt-4 flex flex-col sm:flex-row items-start gap-4 border p-2 rounded shadow-sm bg-gray-50">
+          <div
+            key={index}
+            className="mt-4 flex flex-col sm:flex-row items-start gap-4 border p-2 rounded shadow-sm bg-gray-50"
+          >
             <img
-              src={`http://localhost:5050${img.url}`}
+              src={`${IMAGE_BASE_URL}${img.url}`}
               alt={`Banner ${index}`}
               className="w-40 h-24 object-cover rounded border"
             />
