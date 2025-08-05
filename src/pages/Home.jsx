@@ -5,7 +5,7 @@ import { Helmet } from "react-helmet-async";
 import useDecodedTexts from "../utils/useDecodedText";
 import Slider from "react-slick";
 
-const BASE_API = process.env.REACT_APP_STATIC_URL || "http://localhost:5050/api";
+const BASE_API = process.env.REACT_APP_API_BASE_URL ;
 const IMAGE_BASE = BASE_API.replace("/api", "");
 
 function Home() {
