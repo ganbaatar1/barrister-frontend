@@ -10,8 +10,8 @@ import toast from "react-hot-toast";
 import quillModules from "../../utils/quillModules";
 import quillFormats from "../../utils/quillFormats";
 
-const IMAGE_BASE_URL = process.env.REACT_APP_IMAGE_BASE_URL || "http://localhost:5050";
-
+const IMAGE_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5050";
+//const IMAGE_BASE_URL = process.env.REACT_APP_STATIC_URL || "http://localhost:5050";
 function HomeAdmin() {
   const [formData, setFormData] = useState({
     about: "",
