@@ -1,9 +1,8 @@
 import axios from "axios";
 
-// 🔗 API үндсэн URL
 const BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5050/api";
 
-// ✅ Axios instance үүсгэх
+// ✅ Axios instance
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
 });
@@ -18,9 +17,9 @@ axiosInstance.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    // Content-Type-г зөв тохируулах
+    // FormData биш бол JSON гэж үзэж Content-Type тохируулах
     const isFormData = config.data instanceof FormData;
-    if (!config.headers["Content-Type"] && !isFormData) {
+    if (!isFormData && !config.headers["Content-Type"]) {
       config.headers["Content-Type"] = "application/json";
     }
 
@@ -29,16 +28,13 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// ❌ Response interceptor – 401 алдаанд хариу өгөх
+// ❌ Response interceptor – 401
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      console.warn("❌ Unauthorized – нэвтрэх шаардлагатай эсвэл accessToken хүчингүй байна");
-      // localStorage.removeItem("accessToken");
-      // window.location.href = "/login";
+      console.warn("❌ Unauthorized – accessToken хүчингүй эсвэл дууссан байна");
     }
-
     return Promise.reject(error);
   }
 );

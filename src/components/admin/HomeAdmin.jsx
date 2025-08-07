@@ -10,8 +10,6 @@ import toast from "react-hot-toast";
 import quillModules from "../../utils/quillModules";
 import quillFormats from "../../utils/quillFormats";
 
-const IMAGE_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5050";
-//const IMAGE_BASE_URL = process.env.REACT_APP_STATIC_URL || "http://localhost:5050";
 function HomeAdmin() {
   const [formData, setFormData] = useState({
     about: "",
@@ -50,17 +48,19 @@ function HomeAdmin() {
     const files = Array.from(e.target.files);
     const uploaded = [];
 
-    for (const file of files) {
-      const form = new FormData();
-      form.append("image", file);
-      const res = await uploadHomeImage(form);
-      uploaded.push({ url: res.data.path, caption: "" });
-    }
+    try {
+      for (const file of files) {
+        const { url } = await uploadHomeImage(file);
+        uploaded.push({ url, caption: "" });
+      }
 
-    setFormData((prev) => ({
-      ...prev,
-      images: [...prev.images, ...uploaded],
-    }));
+      setFormData((prev) => ({
+        ...prev,
+        images: [...prev.images, ...uploaded],
+      }));
+    } catch (error) {
+      toast.error("Зураг байршуулахад алдаа гарлаа");
+    }
   };
 
   const handleCaptionChange = (index, caption) => {
@@ -113,7 +113,7 @@ function HomeAdmin() {
             className="mt-4 flex flex-col sm:flex-row items-start gap-4 border p-2 rounded shadow-sm bg-gray-50"
           >
             <img
-              src={`${IMAGE_BASE_URL}${img.url}`}
+              src={img.url}
               alt={`Banner ${index}`}
               className="w-40 h-24 object-cover rounded border"
             />
