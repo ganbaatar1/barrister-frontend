@@ -1,3 +1,4 @@
+// 📁 src/pages/Home.jsx
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { getHomeContent } from "../api/home";
@@ -5,10 +6,7 @@ import { Helmet } from "react-helmet-async";
 import useDecodedTexts from "../utils/useDecodedText";
 import Slider from "react-slick";
 import { Target, Eye, ShieldCheck, Briefcase } from "lucide-react";
-
-const API_BASE = process.env.REACT_APP_API_BASE_URL || "";
-const STATIC_URL = process.env.REACT_APP_STATIC_URL || "";
-const IMAGE_BASE = API_BASE ? API_BASE.replace("/api", "") : STATIC_URL;
+import resolveImageUrl from "../utils/resolveImageUrl";
 
 function Home() {
   const [rawContent, setRawContent] = useState({
@@ -86,10 +84,7 @@ function Home() {
           name="description"
           content="Монголын хууль зүйн үйлчилгээний тэргүүлэгч Barrister.mn сайтын эхлэл хуудас."
         />
-        <meta
-          name="keywords"
-          content="өмгөөлөгч, хуульч, хууль зүйн үйлчилгээ, barrister.mn"
-        />
+        <meta name="keywords" content="өмгөөлөгч, хуульч, хууль зүйн үйлчилгээ, barrister.mn" />
         <link rel="canonical" href="https://barrister.mn/" />
       </Helmet>
 
@@ -99,9 +94,7 @@ function Home() {
           <div className="relative w-full overflow-hidden">
             <Slider {...sliderSettings}>
               {heroImages.map((img, idx) => {
-                const src = (img.url || "").startsWith("http")
-                  ? img.url
-                  : `${IMAGE_BASE}${img.url || ""}`;
+                const src = resolveImageUrl(img?.url || "");
                 return (
                   <div key={idx} className="relative">
                     <img
@@ -110,7 +103,7 @@ function Home() {
                       className="w-full h-[60vh] md:h-[80vh] lg:h-[90vh] object-cover"
                       loading="eager"
                     />
-                    {img.caption ? (
+                    {img?.caption ? (
                       <div className="absolute inset-x-0 bottom-0 bg-black/50 text-white px-4 py-3 md:px-6 md:py-4">
                         <p className="text-sm md:text-base lg:text-lg text-center line-clamp-2">
                           {img.caption}
@@ -125,7 +118,7 @@ function Home() {
         )}
       </div>
 
-      {/* Content Sections: responsive stack -> grid */}
+      {/* Content Sections */}
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-10 grid gap-6 md:gap-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 gap-6">
           <Section title="Бидний тухай" html={content.about} Icon={iconMap["Бидний тухай"]} />

@@ -1,47 +1,32 @@
+// 📁 src/pages/News.jsx
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import useDecodedTexts from "../utils/useDecodedText";
-const API_BASE =
-  process.env.REACT_APP_API_BASE_URL || "http://localhost:5050/api";
-const fallbackImage = "/default-image.jpg";
-const getImageUrl = (path) => {
-  if (!path) return fallbackImage;
-  return path.startsWith("http")
-    ? path
-    : `${process.env.REACT_APP_STATIC_URL}${path}`;
-};
+import resolveImageUrl from "../utils/resolveImageUrl";
+
+const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:5050/api";
 
 function News() {
   const { t } = useTranslation();
-  const [rawNewsList, setRawNewsList] = useState([]);
+  const [rawNews, setRawNews] = useState([]);
+  const newsList = useDecodedTexts(rawNews);
 
   useEffect(() => {
     axios
-    .get(`${API_BASE}/news`)
+      .get(`${API_BASE}/news`)
       .then((res) => {
-        console.log("✅ Хариу:", res.data);
-        // res.data нь шууд массив байна, data талбар байхгүй!
-        const newsArray = Array.isArray(res.data) ? res.data : [];
-        setRawNewsList(newsArray);
+        setRawNews(Array.isArray(res.data) ? res.data : []);
       })
-      .catch((err) => console.error("⚠️ Мэдээ татах үед алдаа:", err));
+      .catch((err) => console.error("❌ News API:", err));
   }, []);
 
-  const newsList = useDecodedTexts(rawNewsList);
-
-  const formatDate = (date) =>
-    new Date(date).toLocaleDateString("mn-MN", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-
-  const getExcerpt = (html = "", maxLength = 140) => {
-    const text = html.replace(/<[^>]*>?/gm, "");
-    return text.length > maxLength ? text.slice(0, maxLength) + "…" : text;
+  const getExcerpt = (html) => {
+    if (!html) return "";
+    const text = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    return text.length > 160 ? text.slice(0, 160) + "…" : text;
   };
 
   return (
@@ -71,17 +56,15 @@ function News() {
                 >
                   <Link to={`/news/${item._id}`}>
                     <img
-                      src={getImageUrl(item.image)}
+                      src={resolveImageUrl(item.image)}
                       alt={item.title || "Мэдээ"}
-                      className="w-full h-40 object-cover mb-3 rounded"
+                      className="w-full h-48 object-cover rounded mb-3"
+                      loading="lazy"
                     />
-                    <h3 className="text-lg font-semibold mb-1">
-                      {item.title || "Гарчиг байхгүй"}
-                    </h3>
-                    <p className="text-sm text-gray-500 mb-2">
-                      {item.date ? formatDate(item.date) : "Огноо байхгүй"}
-                    </p>
-                    <p className="text-gray-700 dark:text-gray-300 mb-3">
+                    <h2 className="text-xl font-semibold mb-2 line-clamp-2">
+                      {item.title}
+                    </h2>
+                    <p className="text-gray-700 dark:text-gray-300 mb-3 line-clamp-3">
                       {excerpt}
                     </p>
                   </Link>
