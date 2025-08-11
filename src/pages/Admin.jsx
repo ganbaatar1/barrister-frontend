@@ -10,6 +10,7 @@ import NewsAdmin from "../components/admin/NewsAdmin";
 import TestimonialAdmin from "../components/admin/TestimonialAdmin";
 import HomeAdmin from "../components/admin/HomeAdmin";
 import ContactSettingsAdmin from "../components/admin/ContactSettingsAdmin";
+import UsersAdmin from "../components/admin/UsersAdmin";
 
 function Admin() {
   const navigate = useNavigate();
@@ -43,6 +44,7 @@ function Admin() {
       case "testimonials": return <TestimonialAdmin />;
       case "home": return <HomeAdmin />;
       case "contact": return <ContactSettingsAdmin />;
+      case "users": return <UsersAdmin />;
       default: return null;
     }
   };

@@ -10,6 +10,8 @@ import toast from "react-hot-toast";
 import quillModules from "../../utils/quillModules";
 import quillFormats from "../../utils/quillFormats";
 
+const STATIC_URL = process.env.REACT_APP_STATIC_URL || "";
+
 function HomeAdmin() {
   const [formData, setFormData] = useState({
     about: "",
@@ -45,20 +47,20 @@ function HomeAdmin() {
   };
 
   const handleImageUpload = async (e) => {
-    const files = Array.from(e.target.files);
+    const files = Array.from(e.target.files || []);
     const uploaded = [];
-
     try {
       for (const file of files) {
-        const { url } = await uploadHomeImage(file);
+        const fd = new FormData();
+        fd.append("image", file);
+        const { url } = await uploadHomeImage(fd); // backend expects field name "image"
         uploaded.push({ url, caption: "" });
       }
-
-      setFormData((prev) => ({
-        ...prev,
-        images: [...prev.images, ...uploaded],
-      }));
-    } catch (error) {
+      setFormData((prev) => ({ ...prev, images: [...(prev.images || []), ...uploaded] }));
+      e.target.value = "";
+      toast.success("Зураг нэмэгдлээ");
+    } catch (err) {
+      console.error("❌ Upload error:", err);
       toast.error("Зураг байршуулахад алдаа гарлаа");
     }
   };
@@ -113,7 +115,7 @@ function HomeAdmin() {
             className="mt-4 flex flex-col sm:flex-row items-start gap-4 border p-2 rounded shadow-sm bg-gray-50"
           >
             <img
-              src={img.url}
+              src={(img.url || "").startsWith("http") ? img.url : `${STATIC_URL}${img.url || ""}`}
               alt={`Banner ${index}`}
               className="w-40 h-24 object-cover rounded border"
             />
@@ -135,7 +137,9 @@ function HomeAdmin() {
             </button>
           </div>
         ))}
+      </div>
 
+      <div className="grid md:grid-cols-2 gap-6">
         <div>
           <label className="font-semibold">Бидний тухай</label>
           <ReactQuill

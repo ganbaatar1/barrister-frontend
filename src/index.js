@@ -1,24 +1,19 @@
-// 📁 src/index.js
-import React from "react";
-import ReactDOM from "react-dom/client";
-import App from "./App";
-import "./index.css";
-import { BrowserRouter } from "react-router-dom";
-import "./i18n";
-import { HelmetProvider } from "react-helmet-async";
-const root = ReactDOM.createRoot(document.getElementById("root"));
+/* 📁 src/index.css */
 
-root.render(
-  <HelmetProvider>
-  <React.StrictMode>
-    <BrowserRouter
-      future={{
-        v7_startTransition: true,
-        v7_relativeSplatPath: true,
-      }}
-    >
-      <App />
-    </BrowserRouter>
-  </React.StrictMode>
-  </HelmetProvider>
-);
+/* Tailwind CSS */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import "slick-carousel/slick/slick.css";
+@import "slick-carousel/slick/slick-theme.css";
+
+/* Google Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
+
+/* Custom Global Styles */
+body {
+  font-family: "Inter", sans-serif;
+  background-color: #f8fafc; /* light mode background */
+}
+
+/* …танаас үлдсэн хэсгүүд өөрчлөгдөөгүй … */
