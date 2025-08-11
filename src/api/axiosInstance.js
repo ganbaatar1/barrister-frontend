@@ -1,42 +1,23 @@
+// 📁 src/api/axiosInstance.js
 import axios from "axios";
 
-const BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5050/api";
+const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:5050/api";
 
-// ✅ Axios instance
 const axiosInstance = axios.create({
-  baseURL: BASE_URL,
+  baseURL: API_BASE,
+  withCredentials: true, // хэрвээ cookie ашигладаг бол
 });
 
-// 🛡 Request interceptor – accessToken нэмэх
-axiosInstance.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("accessToken");
-    console.log("🔑 Axios interceptor accessToken:", token);
-
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+axiosInstance.interceptors.request.use(async (config) => {
+  const token = localStorage.getItem("accessToken");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+    // ✅ Продод токен хэвлэхгүй, дев дээр богиносгож хэвлэж болно
+    if (process.env.NODE_ENV !== "production") {
+      console.log("🔑 Axios interceptor accessToken:", token.slice(0, 16) + "…");
     }
-
-    // FormData биш бол JSON гэж үзэж Content-Type тохируулах
-    const isFormData = config.data instanceof FormData;
-    if (!isFormData && !config.headers["Content-Type"]) {
-      config.headers["Content-Type"] = "application/json";
-    }
-
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-// ❌ Response interceptor – 401
-axiosInstance.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      console.warn("❌ Unauthorized – accessToken хүчингүй эсвэл дууссан байна");
-    }
-    return Promise.reject(error);
   }
-);
+  return config;
+});
 
 export default axiosInstance;

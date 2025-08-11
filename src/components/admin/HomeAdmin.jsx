@@ -9,8 +9,7 @@ import {
 import toast from "react-hot-toast";
 import quillModules from "../../utils/quillModules";
 import quillFormats from "../../utils/quillFormats";
-
-const STATIC_URL = process.env.REACT_APP_STATIC_URL || "";
+import resolveImageUrl from "../../utils/resolveImageUrl";
 
 function HomeAdmin() {
   const [formData, setFormData] = useState({
@@ -21,7 +20,6 @@ function HomeAdmin() {
     services: "",
     images: [],
   });
-
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -35,7 +33,7 @@ function HomeAdmin() {
             images: res.data.images || [],
           }));
         }
-      } catch (err) {
+      } catch {
         toast.error("Мэдээлэл татахад алдаа гарлаа");
       }
     };
@@ -53,7 +51,7 @@ function HomeAdmin() {
       for (const file of files) {
         const fd = new FormData();
         fd.append("image", file);
-        const { url } = await uploadHomeImage(fd); // backend expects field name "image"
+        const { url } = await uploadHomeImage(fd); // backend: return { url: "/uploads/.."}
         uploaded.push({ url, caption: "" });
       }
       setFormData((prev) => ({ ...prev, images: [...(prev.images || []), ...uploaded] }));
@@ -81,15 +79,8 @@ function HomeAdmin() {
     try {
       setLoading(true);
       const res = await updateHomeContent(formData);
-
       if (res.status === 200) {
         toast.success("Амжилттай хадгалагдлаа");
-        const refreshed = await getHomeContent();
-        setFormData((prev) => ({
-          ...prev,
-          ...refreshed.data,
-          images: refreshed.data.images || [],
-        }));
       } else {
         toast.error("Серверээс алдаатай хариу ирлээ");
       }
@@ -115,7 +106,7 @@ function HomeAdmin() {
             className="mt-4 flex flex-col sm:flex-row items-start gap-4 border p-2 rounded shadow-sm bg-gray-50"
           >
             <img
-              src={(img.url || "").startsWith("http") ? img.url : `${STATIC_URL}${img.url || ""}`}
+              src={resolveImageUrl(img?.url)}
               alt={`Banner ${index}`}
               className="w-40 h-24 object-cover rounded border"
             />
