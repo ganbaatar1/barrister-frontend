@@ -1,35 +1,24 @@
 // 📁 src/api/news.js
+// Мэдээний CRUD API дуудлагууд
+
 import axiosInstance from "./axiosInstance";
 
-// 🟢 Мэдээ үүсгэх (зурагтай + FormData)
-export const createNews = (formData) =>
-  axiosInstance.post("/news", formData, {
-    headers: {
-      "Content-Type": "multipart/form-data", // 🧠 FormData үед заавал нэмэх
-    },
-  });
+/** Бүх мэдээ авах */
+export const getNews = (params = {}) =>
+  axiosInstance.get("/news", { params });
 
-// 🟡 Мэдээ шинэчлэх
-export const updateNews = (id, formData) =>
-  axiosInstance.put(`/news/${id}`, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+/** Нэг мэдээ авах */
+export const getNewsById = (id) =>
+  axiosInstance.get(`/news/${id}`);
 
-// 🔴 Мэдээ устгах
-export const deleteNews = (id) => axiosInstance.delete(`/news/${id}`);
+/** Мэдээ шинээр үүсгэх */
+export const createNews = (payload) =>
+  axiosInstance.post("/news", payload);
 
-// 📘 Нэг мэдээ авах
-export const getNews = (id) => axiosInstance.get(`/news/${id}`);
+/** Мэдээ засах */
+export const updateNews = (id, payload) =>
+  axiosInstance.put(`/news/${id}`, payload);
 
-// 📚 Бүх мэдээ авах
-export const getAllNews = () => axiosInstance.get("/news");
-
-// 🖼 Зураг upload (хэрэв тусдаа upload route байвал)
-export const uploadNewsImage = (formData) =>
-  axiosInstance.post("/news/upload", formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+/** Мэдээ устгах */
+export const deleteNews = (id) =>
+  axiosInstance.delete(`/news/${id}`);
