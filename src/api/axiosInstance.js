@@ -5,18 +5,12 @@ const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:5050/ap
 
 const axiosInstance = axios.create({
   baseURL: API_BASE,
-  withCredentials: true, // хэрвээ cookie ашигладаг бол
+  withCredentials: false, // Cookie хэрэглэхгүй → CORS хялбар
 });
 
-axiosInstance.interceptors.request.use(async (config) => {
+axiosInstance.interceptors.request.use((config) => {
   const token = localStorage.getItem("accessToken");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-    // ✅ Продод токен хэвлэхгүй, дев дээр богиносгож хэвлэж болно
-    if (process.env.NODE_ENV !== "production") {
-      console.log("🔑 Axios interceptor accessToken:", token.slice(0, 16) + "…");
-    }
-  }
+  if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
