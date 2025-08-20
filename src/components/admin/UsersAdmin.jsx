@@ -1,4 +1,4 @@
-// src/components/admin/UsersAdmin.jsx
+// 📁 src/components/admin/UsersAdmin.jsx
 import { useEffect, useState } from "react";
 import axiosInstance from "../../api/axiosInstance";
 import { UserPlus, Trash2, RefreshCw } from "lucide-react";
@@ -13,7 +13,7 @@ import toast from "react-hot-toast";
  */
 export default function UsersAdmin() {
   const [users, setUsers] = useState([]);
-  //const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false); // ← сэргээв
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -43,7 +43,7 @@ export default function UsersAdmin() {
       await axiosInstance.post("/admin/users", form);
       toast.success("Хэрэглэгч нэмэгдлээ");
       setForm({ email: "", password: "", displayName: "" });
-      load();
+      load(); // load дотор loading true/false болгоно
     } catch (e) {
       toast.error("Нэмэхэд алдаа гарлаа");
       console.error(e);
@@ -68,10 +68,12 @@ export default function UsersAdmin() {
         <h2 className="text-xl font-semibold">Хэрэглэгч удирдах</h2>
         <button
           onClick={load}
-          className="inline-flex items-center gap-2 px-3 py-2 rounded bg-gray-100 hover:bg-gray-200"
+          disabled={loading}
+          className="inline-flex items-center gap-2 px-3 py-2 rounded bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
+          type="button"
         >
-          <RefreshCw className="w-4 h-4" />
-          Шинэчлэх
+          <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+          {loading ? "Ачаалж байна…" : "Шинэчлэх"}
         </button>
       </div>
 
@@ -113,6 +115,10 @@ export default function UsersAdmin() {
         </button>
       </form>
 
+      {users.length === 0 && !loading && (
+        <div className="text-sm text-gray-500">Одоогоор бүртгэлгүй.</div>
+      )}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {users.map((u) => (
           <div
@@ -129,6 +135,7 @@ export default function UsersAdmin() {
             <button
               onClick={() => remove(u.uid)}
               className="mt-2 inline-flex items-center gap-2 text-red-600 hover:underline"
+              type="button"
             >
               <Trash2 className="w-4 h-4" />
               Устгах
