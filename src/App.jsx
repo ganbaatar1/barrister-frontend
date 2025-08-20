@@ -1,4 +1,5 @@
 // 📁 src/App.jsx
+import React, { Suspense } from "react";
 import AppRouter from "./Router";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
@@ -7,20 +8,21 @@ import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "./contexts/AuthContext";
 import i18n from "./i18n";
 
-function App() {
+export default function App() {
   return (
     <HelmetProvider>
       <I18nextProvider i18n={i18n}>
         <ThemeProvider>
           <AuthProvider>
             <ErrorBoundary>
-            <AppRouter />
-          </ErrorBoundary>
+              {/* ⚠️ Lazy routes must be rendered inside Suspense */}
+              <Suspense fallback={<div className="p-6">Ачаалж байна…</div>}>
+                <AppRouter />
+              </Suspense>
+            </ErrorBoundary>
           </AuthProvider>
         </ThemeProvider>
       </I18nextProvider>
     </HelmetProvider>
   );
 }
-
-export default App;
