@@ -114,7 +114,7 @@ export default function NewsAdmin() {
 
   // устгах
   const onDelete = async (id) => {
-    if (!confirm("Энэ мэдээг устгах уу?")) return;
+    if (!window.confirm("Энэ мэдээг устгах уу?")) return;
     try {
       await deleteNews(id);
       toast.success("Устгагдлаа");

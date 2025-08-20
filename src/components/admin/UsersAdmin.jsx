@@ -51,7 +51,7 @@ export default function UsersAdmin() {
   };
 
   const remove = async (uid) => {
-    if (!confirm("Устгах уу?")) return;
+    if (!window.confirm("Энэ хэрэглэгчийг устгах уу?")) return;
     try {
       await axiosInstance.delete(`/admin/users/${uid}`);
       toast.success("Устгагдлаа");
