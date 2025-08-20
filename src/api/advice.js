@@ -1,5 +1,5 @@
 // 📁 src/api/advice.js
-import axiosInstance from "./axiosInstance";
+import axiosInstance from "../api/axiosInstance";
 
 const api = {
   getAdvice: () => axiosInstance.get("/advice"),

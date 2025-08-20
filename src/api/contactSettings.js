@@ -1,5 +1,5 @@
 // 📁 src/api/contactSettings.js
-import axiosInstance from "./axiosInstance";
+import axiosInstance from "../api/axiosInstance";
 
 export const getContactSettings = () => axiosInstance.get("/contactSettings");
 

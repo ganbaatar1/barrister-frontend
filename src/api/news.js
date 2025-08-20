@@ -1,7 +1,7 @@
 // 📁 src/api/news.js
 // Мэдээний CRUD API дуудлагууд
 
-import axiosInstance from "./axiosInstance";
+import axiosInstance from "../api/axiosInstance";
 
 /** Бүх мэдээ авах */
 export const getNews = (params = {}) =>

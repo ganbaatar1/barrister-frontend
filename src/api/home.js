@@ -2,7 +2,7 @@
 // Нүүр хуудасны агуулгын API дуудлагууд
 // (Зураг байршуулалтыг одоо Cloudinary-р шийдсэн тул энд upload функцийг хадгалах шаардлагагүй.)
 
-import axiosInstance from "./axiosInstance";
+import axiosInstance from "../api/axiosInstance";
 
 /**
  * Нүүр хуудасны агуулга авах
