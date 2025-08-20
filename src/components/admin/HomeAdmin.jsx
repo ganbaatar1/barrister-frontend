@@ -1,198 +1,133 @@
+// 📁 src/components/admin/HomeAdmin.jsx
+import resolveImageUrl from "../../utils/resolveImageUrl";
 import { useEffect, useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import {
-  getHomeContent,
-  updateHomeContent,
-  uploadHomeImage,
-} from "../../api/home";
+import { getHomeContent, updateHomeContent } from "../../api/home";
 import toast from "react-hot-toast";
 import quillModules from "../../utils/quillModules";
 import quillFormats from "../../utils/quillFormats";
-import resolveImageUrl from "../../utils/resolveImageUrl";
+import { cloudinaryUpload } from "../../utils/cloudinary";
 
-function HomeAdmin() {
+const ok2xx = (s) => Number(s) >= 200 && Number(s) < 300;
+
+export default function HomeAdmin() {
   const [formData, setFormData] = useState({
     about: "",
     mission: "",
     vision: "",
     principles: "",
     services: "",
-    images: [],
+    images: [], // [{ url: "https://...", caption: "" }]
   });
+  const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // ---- ТӨХӨӨРӨМЖ АЧААЛЛАХ ----
   useEffect(() => {
-    const fetchData = async () => {
+    (async () => {
+      setLoading(true);
       try {
         const res = await getHomeContent();
-        if (res.data) {
-          setFormData((prev) => ({
-            ...prev,
-            ...res.data,
-            images: res.data.images || [],
-          }));
+        const d = res?.data || {};
+        // Backend хуучин байж болно (single image) → нийцүүлэх
+        let images = [];
+        if (Array.isArray(d.images) && d.images.length) {
+          images = d.images
+            .filter(Boolean)
+            .map((x) => (typeof x === "string" ? { url: x, caption: "" } : { url: x.url, caption: x.caption || "" }))
+            .filter((x) => !!x.url);
+        } else if (d.image) {
+          images = [{ url: d.image, caption: "" }];
         }
-      } catch {
+
+        setFormData({
+          about: d.about || "",
+          mission: d.mission || "",
+          vision: d.vision || "",
+          principles: d.principles || "",
+          services: d.services || "",
+          images,
+        });
+      } catch (e) {
+        console.error(e);
         toast.error("Мэдээлэл татахад алдаа гарлаа");
+      } finally {
+        setLoading(false);
       }
-    };
-    fetchData();
+    })();
   }, []);
 
-  const handleQuillChange = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
+  // ---- ТАЛБАР ТОГТООХ ----
+  const setField = (k, v) => setFormData((p) => ({ ...p, [k]: v }));
 
+  // ---- CLOUDINARY UPLOAD ----
   const handleImageUpload = async (e) => {
     const files = Array.from(e.target.files || []);
-    const uploaded = [];
+    if (!files.length) return;
+    setUploading(true);
     try {
-      for (const file of files) {
-        const fd = new FormData();
-        fd.append("image", file);
-        const { url } = await uploadHomeImage(fd); // backend: return { url: "/uploads/.."}
-        uploaded.push({ url, caption: "" });
+      const uploaded = [];
+      for (const f of files) {
+        const c = await cloudinaryUpload(f, "home"); // Cloudinary → /barrister/home
+        uploaded.push({ url: c.secure_url, caption: "" });
       }
-      setFormData((prev) => ({ ...prev, images: [...(prev.images || []), ...uploaded] }));
-      e.target.value = "";
-      toast.success("Зураг нэмэгдлээ");
+      setFormData((p) => ({ ...p, images: [...p.images, ...uploaded] }));
+      toast.success("Зураг Cloudinary-д нэмэгдлээ");
     } catch (err) {
-      console.error("❌ Upload error:", err);
-      toast.error("Зураг байршуулахад алдаа гарлаа");
+      console.error(err);
+      toast.error("Cloudinary upload амжилтгүй");
+    } finally {
+      e.target.value = "";
+      setUploading(false);
     }
   };
 
-  const handleCaptionChange = (index, caption) => {
-    const updatedImages = [...formData.images];
-    updatedImages[index].caption = caption;
-    setFormData({ ...formData, images: updatedImages });
+  const updateCaption = (i, caption) => {
+    setFormData((p) => {
+      const next = [...p.images];
+      next[i] = { ...next[i], caption };
+      return { ...p, images: next };
+    });
   };
 
-  const handleImageDelete = (index) => {
-    const updated = [...formData.images];
-    updated.splice(index, 1);
-    setFormData({ ...formData, images: updated });
+  const removeImage = (i) => {
+    setFormData((p) => {
+      const next = [...p.images];
+      next.splice(i, 1);
+      return { ...p, images: next };
+    });
   };
 
-  const handleSubmit = async () => {
+  // ---- ХАДГАЛАХ ----
+  const handleSave = async () => {
+    setSaving(true);
     try {
-      setLoading(true);
-      const res = await updateHomeContent(formData);
-      if (res.status === 200) {
+      // Backend нийцтэй payload (шинэ images[], хуучин image)
+      const images = (formData.images || []).map((x) => ({ url: x.url, caption: x.caption || "" }));
+      const payload = {
+        about: formData.about,
+        mission: formData.mission,
+        vision: formData.vision,
+        principles: formData.principles,
+        services: formData.services,
+        images,
+        image: images[0]?.url || "", // single талбар руу эхнийхийг давхар өгнө (backward compat)
+      };
+
+      const res = await updateHomeContent(payload);
+      if (ok2xx(res?.status)) {
         toast.success("Амжилттай хадгалагдлаа");
       } else {
-        toast.error("Серверээс алдаатай хариу ирлээ");
+        toast.error(`Серверээс алдаатай хариу ирлээ (${res?.status || "—"})`);
       }
-    } catch (err) {
-      console.error("❌ Хадгалах алдаа:", err);
+    } catch (e) {
+      console.error(e);
       toast.error("Хадгалах үед алдаа гарлаа");
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
-  return (
-    <div className="p-6 space-y-6 bg-white rounded shadow">
-      <h2 className="text-2xl font-bold">Нүүр хуудасны агуулга удирдах</h2>
-
-      <div className="space-y-4">
-        <label className="font-semibold">Нүүр зургууд (Slideshow)</label>
-        <input type="file" multiple accept="image/*" onChange={handleImageUpload} />
-
-        {formData.images.map((img, index) => (
-          <div
-            key={index}
-            className="mt-4 flex flex-col sm:flex-row items-start gap-4 border p-2 rounded shadow-sm bg-gray-50"
-          >
-            <img
-              src={resolveImageUrl(img?.url)}
-              alt={`Banner ${index}`}
-              className="w-40 h-24 object-cover rounded border"
-            />
-            <div className="flex-1">
-              <label className="block text-sm font-medium mb-1">Тайлбар</label>
-              <input
-                type="text"
-                value={img.caption}
-                onChange={(e) => handleCaptionChange(index, e.target.value)}
-                className="w-full border px-3 py-2 rounded"
-                placeholder="Тайлбар бичих..."
-              />
-            </div>
-            <button
-              onClick={() => handleImageDelete(index)}
-              className="text-red-600 font-bold hover:underline"
-            >
-              Устгах
-            </button>
-          </div>
-        ))}
-      </div>
-
-      <div className="grid md:grid-cols-2 gap-6">
-        <div>
-          <label className="font-semibold">Бидний тухай</label>
-          <ReactQuill
-            value={formData.about}
-            onChange={(val) => handleQuillChange("about", val)}
-            modules={quillModules}
-            formats={quillFormats}
-          />
-        </div>
-
-        <div>
-          <label className="font-semibold">Эрхэм зорилго</label>
-          <ReactQuill
-            value={formData.mission}
-            onChange={(val) => handleQuillChange("mission", val)}
-            modules={quillModules}
-            formats={quillFormats}
-          />
-        </div>
-
-        <div>
-          <label className="font-semibold">Алсын хараа</label>
-          <ReactQuill
-            value={formData.vision}
-            onChange={(val) => handleQuillChange("vision", val)}
-            modules={quillModules}
-            formats={quillFormats}
-          />
-        </div>
-
-        <div>
-          <label className="font-semibold">Үндсэн зарчим</label>
-          <ReactQuill
-            value={formData.principles}
-            onChange={(val) => handleQuillChange("principles", val)}
-            modules={quillModules}
-            formats={quillFormats}
-          />
-        </div>
-
-        <div>
-          <label className="font-semibold">Үйлчилгээний чиглэлүүд</label>
-          <ReactQuill
-            value={formData.services}
-            onChange={(val) => handleQuillChange("services", val)}
-            modules={quillModules}
-            formats={quillFormats}
-          />
-        </div>
-
-        <div className="pt-4">
-          <button
-            onClick={handleSubmit}
-            disabled={loading}
-            className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
-          >
-            {loading ? "Хадгалж байна..." : "Хадгалах"}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default HomeAdmin;
+  return

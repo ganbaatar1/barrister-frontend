@@ -1,21 +1,35 @@
+// 📁 src/api/home.js
+// Нүүр хуудасны агуулгын API дуудлагууд
+// (Зураг байршуулалтыг одоо Cloudinary-р шийдсэн тул энд upload функцийг хадгалах шаардлагагүй.)
+
 import axiosInstance from "./axiosInstance";
 
-// ✅ Нүүр хуудасны агуулга авах
+/**
+ * Нүүр хуудасны агуулга авах
+ * GET /home
+ * @returns {Promise<import('axios').AxiosResponse>}
+ * Response жишээ:
+ * {
+ *   about: string,
+ *   mission: string,
+ *   vision: string,
+ *   principles?: string,
+ *   services?: string,
+ *   images: Array<{ url: string, caption?: string }>
+ * }
+ */
 export const getHomeContent = () => axiosInstance.get("/home");
 
-// ✅ Нүүр хуудасны агуулга шинэчлэх (олон зурагтай)
-export const updateHomeContent = (data) => {
-  return axiosInstance.put("/home", data);
-};
-
-// ✅ Зураг байршуулах — File эсвэл FormData аль алиныг дэмжинэ
-export const uploadHomeImage = (data) => {
-  let formData = data;
-  if (!(data instanceof FormData)) {
-    formData = new FormData();
-    formData.append("image", data);
-  }
-  return axiosInstance.post("/home/upload-image", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  }).then(res => res.data);
-};
+/**
+ * Нүүр хуудасны агуулга шинэчлэх
+ * PUT /home
+ * @param {Object} data
+ * @param {string} data.about
+ * @param {string} data.mission
+ * @param {string} data.vision
+ * @param {string} [data.principles]
+ * @param {string} [data.services]
+ * @param {Array<{ url: string, caption?: string }>} data.images
+ * @returns {Promise<import('axios').AxiosResponse>}
+ */
+export const updateHomeContent = (data) => axiosInstance.put("/home", data);
