@@ -1,5 +1,5 @@
 // 📁 src/api/lawyers.js
-import axiosInstance from "./axiosInstance";
+import axiosInstance from "../api/axiosInstance";
 
 // ✅ Бүх хуульчдыг авах
 export const getAllLawyers = () => axiosInstance.get("/lawyers");

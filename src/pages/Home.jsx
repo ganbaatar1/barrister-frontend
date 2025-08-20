@@ -1,5 +1,5 @@
 // 📁 src/api/home.js
-import axiosInstance from "./axiosInstance";
+import axiosInstance from "../api/axiosInstance";
 
 const toRelative = (url) => {
   if (!url) return "";

@@ -1,5 +1,5 @@
 // 📁 src/api/testimonials.js
-import axiosInstance from "./axiosInstance";
+import axiosInstance from "../api/axiosInstance";
 
 // 📚 Бүх сэтгэгдэл авах
 export const getTestimonials = () =>
