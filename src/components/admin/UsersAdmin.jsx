@@ -13,7 +13,7 @@ import toast from "react-hot-toast";
  */
 export default function UsersAdmin() {
   const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(false);
+  //const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     email: "",
     password: "",

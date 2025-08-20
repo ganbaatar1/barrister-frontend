@@ -3,7 +3,7 @@ import api from "../api/advice";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 const BASE_API = process.env.REACT_APP_API_BASE_URL || "http://localhost:5050/api";
-const IMAGE_BASE = BASE_API.replace("/api", "");
+//const IMAGE_BASE = BASE_API.replace("/api", "");
 function Advice() {
   const { t } = useTranslation();
   const [adviceList, setAdviceList] = useState([]);
