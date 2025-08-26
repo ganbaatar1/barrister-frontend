@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { getHome, updateHome, uploadImage } = require("../controllers/homeController");
-const authenticateFirebaseToken = require("../middlewares/firebaseAuth");
+const authenticateFirebaseToken = require("../middleware/auth");
 const multer = require("multer");
 const upload = multer({ storage: multer.memoryStorage() }); // Cloudinary-д зориулав
 

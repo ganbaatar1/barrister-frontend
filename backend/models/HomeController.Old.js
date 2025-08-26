@@ -1,4 +1,4 @@
-const Home = require("../models/homeContent");
+const Home = require("./HomeControllerOld");
 const { uploadToCloudinary } = require("../utils/cloudinary");
 
 // GET /
