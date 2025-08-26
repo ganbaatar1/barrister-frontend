@@ -1,13 +1,14 @@
-import { Navigate } from "react-router-dom";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "../firebase";
+// 📁 src/components/PrivateRoute.jsx
+import { Navigate, useLocation, Outlet } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
-const PrivateRoute = ({ children }) => {
-  const [user, loading] = useAuthState(auth);
+export default function PrivateRoute({ children }) {
+  const { user } = useAuth?.() || {};
+  const loc = useLocation();
 
-  if (loading) return <div>Уншиж байна...</div>;
-
-  return user ? children : <Navigate to="/login" replace />;
-};
-
-export default PrivateRoute;
+  if (!user) {
+    return <Navigate to="/login" replace state={{ from: loc }} />;
+  }
+  // children байвал түүнийг, үгүй бол Outlet-ыг буцаана
+  return children ? children : <Outlet />;
+}
