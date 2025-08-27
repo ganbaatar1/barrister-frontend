@@ -1,4 +1,5 @@
 // 📁 src/pages/Home.jsx
+
 import { useEffect, useMemo, useState } from "react";
 import Slider from "react-slick";
 import { getHomeContent } from "../api/home";

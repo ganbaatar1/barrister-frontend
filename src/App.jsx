@@ -1,4 +1,6 @@
 // 📁 src/App.jsx
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import React, { Suspense } from "react";
 import AppRouter from "./Router";
 import ErrorBoundary from "./components/ErrorBoundary";
