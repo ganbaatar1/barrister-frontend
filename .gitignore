@@ -37,3 +37,12 @@ backend/config/firebase-service-decoded.json
 bfg-*.jar
 barrister-frontend.git/
 backend/uploads/
+node_modules/
+backend/node_modules/
+.env
+backend/.env
+backend/config/firebase-service-decoded.json
+*.service-account.json
+bfg-*.jar
+barrister-frontend.git/
+backend/uploads/
