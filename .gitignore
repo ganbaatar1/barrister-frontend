@@ -28,3 +28,12 @@ Archive.zip
 barrister-backend-updated.zip
 backend/.env
 .env
+node_modules/
+backend/node_modules/
+.env
+backend/.env
+backend/config/firebase-service-decoded.json
+*.service-account.json
+bfg-*.jar
+barrister-frontend.git/
+backend/uploads/
