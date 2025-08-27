@@ -26,3 +26,5 @@ backend/config/firebase-service-account.json
 firebase-service-account.json.bak
 Archive.zip
 barrister-backend-updated.zip
+backend/.env
+.env
