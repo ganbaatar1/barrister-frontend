@@ -1,0 +1,84 @@
+{
+  "nav": {
+    "home": "主页",
+    "news": "新闻",
+    "lawyers": "律师",
+    "contact": "联系",
+    "login": "登录",
+    "register": "注册",
+    "admin": "后台",
+    "advice": "法律建议",
+    "testimonials": "评价",
+    "logout": "退出"
+  },
+  "news": {
+    "title": "法律新闻",
+    "empty": "目前没有新闻。",
+    "readMore": "阅读更多"
+  },
+  "advice": {
+    "title": "标题",
+    "content": "建议内容"
+  },
+  "lawyer": {
+    "name": "姓名",
+    "bio": "简介",
+    "specialty": "专长"
+  },
+  "contact": {
+    "name": "您的姓名",
+    "email": "电子邮箱",
+    "message": "留言",
+    "submit": "提交"
+  },
+  "login": {
+    "title": "登录",
+    "email": "邮箱",
+    "password": "密码",
+    "submit": "登录"
+  },
+  "register": {
+    "title": "注册",
+    "name": "姓名",
+    "email": "邮箱",
+    "password": "密码",
+    "submit": "注册"
+  },
+  "chat": {
+    "title": "聊天",
+    "send": "发送",
+    "placeholder": "输入信息..."
+  },
+  "dashboard": {
+    "title": "控制面板",
+    "welcome": "欢迎使用"
+  },
+  "testimonials": {
+    "empty": "目前还没有评价"
+  },
+  "edit": "编辑",
+  "add": "添加",
+  "delete": "删除",
+  "loading": "加载中...",
+  "not_found": "未找到",
+  "footer": {
+    "rights_reserved": "版权所有。"
+  },
+  "admin": {
+    "contact_settings": {
+      "title": "联系信息",
+      "phone": "电话号码",
+      "email": "电子邮箱",
+      "map_url": "Google 地图链接",
+      "address": "地址",
+      "social_links": "社交链接",
+      "social_name": "社交平台名称",
+      "social_url": "链接地址",
+      "saved_successfully": "保存成功",
+      "save_error": "保存时发生错误",
+      "error_loading_settings": "加载联系信息失败",
+      "no_socials": "暂无社交链接",
+      "social_link_required": "平台和链接不能为空"
+    }
+  }
+}
