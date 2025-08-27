@@ -1,13 +1,18 @@
+// backend/server.js
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const path = require("path");
-require("dotenv").config();
 const fs = require("fs");
+require("dotenv").config();
+
 const connectDB = require("./config/db");
 const app = express();
 
-// ===== Firebase Admin SDK setup =====
+// ----- Trust proxy (heroku/vercel/nginx ард ажиллах үед) -----
+app.set("trust proxy", 1);
+
+// ===== Firebase Admin SDK setup (file commit хийхгүйгээр) =====
 const admin = require("firebase-admin");
 
 const base64ServiceAccount = process.env.FIREBASE_SERVICE_ACCOUNT_BASE64;
@@ -17,22 +22,30 @@ if (!base64ServiceAccount) {
   process.exit(1);
 }
 
-const decodedServiceAccount = Buffer.from(base64ServiceAccount, "base64").toString("utf8");
-const serviceAccount = JSON.parse(decodedServiceAccount);
+let serviceAccount;
+try {
+  const decoded = Buffer.from(base64ServiceAccount, "base64").toString("utf8");
+  serviceAccount = JSON.parse(decoded);
+} catch (e) {
+  console.error("❌ FIREBASE_SERVICE_ACCOUNT_BASE64 задлах/JSON parse хийхэд алдаа:", e.message);
+  process.exit(1);
+}
 
 if (!admin.apps.length) {
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
+    // storageBucket гэх мэт нэмэлт тохиргоо байвал эндээ оруулна
   });
   console.log("✅ Firebase Admin амжилттай initialize боллоо.");
 }
-
 // ===============================
 
 // ✅ Security middleware
 app.use(
   helmet({
-    crossOriginResourcePolicy: false,
+    crossOriginResourcePolicy: false,           // /uploads-ыг кросс-орижинд үзүүлэхэд
+    crossOriginEmbedderPolicy: false,           // зарим asset-тай зөрчилдөхөөс сэргийлэх
+    contentSecurityPolicy: false,               // SPA + WYSIWYG гэх мэтэд хэрэгтэй байж болно
   })
 );
 
@@ -42,31 +55,29 @@ app.get("/", (req, res) => {
 });
 
 // Body parser middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // Global CORS тохиргоо
 const allowedOrigins = [
+  process.env.CLIENT_URL,
+  process.env.CLIENT_URL_2,
   "http://localhost:3000",
   "https://barrister-frontend.vercel.app",
-];
+].filter(Boolean);
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (!origin) return callback(null, true);
+      if (!origin) return callback(null, true); // curl, Postman зэрэг
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
-      } else {
-        return callback(new Error(`CORS policy: ${origin} origin-ыг зөвшөөрөхгүй байна.`), false);
       }
+      return callback(new Error(`CORS policy: ${origin} origin-ыг зөвшөөрөхгүй байна.`), false);
     },
     credentials: true,
   })
 );
-
-// ✅ Static файл – /uploads-г нийтэд нээх
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // uploads хавтас болон default зураг үүсгэх
 const ensureDefaultProfileImage = () => {
@@ -74,19 +85,22 @@ const ensureDefaultProfileImage = () => {
   const defaultImageSrc = path.join(__dirname, "../src/assets/default-profile.png");
   const defaultImageDest = path.join(uploadsDir, "default-profile.png");
 
-  if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir);
-  }
-
-  if (!fs.existsSync(defaultImageDest)) {
-    try {
+  try {
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+    if (fs.existsSync(defaultImageSrc) && !fs.existsSync(defaultImageDest)) {
       fs.copyFileSync(defaultImageSrc, defaultImageDest);
       console.log("✅ default-profile.png зургийг хууллаа.");
-    } catch (err) {
-      console.error("❌ default зургийг хуулж чадсангүй:", err.message);
     }
+  } catch (err) {
+    console.error("❌ default зургийг бэлтгэхэд алдаа:", err.message);
   }
 };
+
+// ✅ Static файл – /uploads-г нийтэд нээх
+ensureDefaultProfileImage();
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // ✅ API Routes
 app.use("/api/lawyers", require("./routes/lawyerRoutes"));
@@ -96,7 +110,13 @@ app.use("/api/home", require("./routes/homeRoutes"));
 app.use("/api/advice", require("./routes/adviceRoutes"));
 app.use("/api/contactSettings", require("./routes/contactSettings"));
 
+// 404 (олдсонгүй) handler
+app.use((req, res, next) => {
+  res.status(404).json({ error: "Хуудас/ресурс олдсонгүй" });
+});
+
 // Error handler
+// eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   console.error("🚨 Серверийн алдаа:", err.stack);
   res.status(500).json({
@@ -107,10 +127,14 @@ app.use((err, req, res, next) => {
 
 // Start server
 const PORT = process.env.PORT || 5050;
-ensureDefaultProfileImage();
 
-connectDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`✅ Сервер амжилттай ажиллаж байна — порт: ${PORT}`);
+connectDB()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`✅ Сервер амжилттай ажиллаж байна — порт: ${PORT}`);
+    });
+  })
+  .catch((e) => {
+    console.error("❌ DB-т холбогдох үед алдаа:", e.message);
+    process.exit(1);
   });
-});
