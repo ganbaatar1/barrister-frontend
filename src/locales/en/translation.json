@@ -1,0 +1,84 @@
+{
+  "nav": {
+    "home": "Home",
+    "news": "News",
+    "lawyers": "Lawyers",
+    "contact": "Contact",
+    "login": "Login",
+    "register": "Register",
+    "admin": "Admin",
+    "advice": "Advice",
+    "testimonials": "Testimonials",
+    "logout": "Logout"
+  },
+  "news": {
+    "title": "Legal News",
+    "empty": "No news available at the moment.",
+    "readMore": "Read more"
+  },
+  "advice": {
+    "title": "Title",
+    "content": "Advice content"
+  },
+  "lawyer": {
+    "name": "Name",
+    "bio": "Biography",
+    "specialty": "Specialty"
+  },
+  "contact": {
+    "name": "Your name",
+    "email": "Email",
+    "message": "Message",
+    "submit": "Submit"
+  },
+  "login": {
+    "title": "Login",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Login"
+  },
+  "register": {
+    "title": "Register",
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Register"
+  },
+  "chat": {
+    "title": "Chat",
+    "send": "Send",
+    "placeholder": "Type a message..."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome"
+  },
+  "testimonials": {
+    "empty": "No testimonials yet"
+  },
+  "edit": "Edit",
+  "add": "Add",
+  "delete": "Delete",
+  "loading": "Loading...",
+  "not_found": "Not found",
+  "footer": {
+    "rights_reserved": "All rights reserved."
+  },
+  "admin": {
+    "contact_settings": {
+      "title": "Contact Information",
+      "phone": "Phone number",
+      "email": "Email address",
+      "map_url": "Google Maps URL",
+      "address": "Address",
+      "social_links": "Social links",
+      "social_name": "Social name",
+      "social_url": "Link URL",
+      "saved_successfully": "Successfully saved",
+      "save_error": "Error while saving",
+      "error_loading_settings": "Failed to load contact settings",
+      "no_socials": "No social links available",
+      "social_link_required": "Platform and link cannot be empty"
+    }
+  }
+}

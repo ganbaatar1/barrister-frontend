@@ -1,0 +1,84 @@
+{
+  "nav": {
+    "home": "홈",
+    "news": "뉴스",
+    "lawyers": "변호사",
+    "contact": "문의",
+    "login": "로그인",
+    "register": "회원가입",
+    "admin": "관리자",
+    "advice": "법률 상담",
+    "testimonials": "이용후기",
+    "logout": "로그아웃"
+  },
+  "news": {
+    "title": "법률 뉴스",
+    "empty": "현재 등록된 뉴스가 없습니다.",
+    "readMore": "자세히 보기"
+  },
+  "advice": {
+    "title": "제목",
+    "content": "상담 내용"
+  },
+  "lawyer": {
+    "name": "이름",
+    "bio": "약력",
+    "specialty": "전문 분야"
+  },
+  "contact": {
+    "name": "이름",
+    "email": "이메일",
+    "message": "메시지",
+    "submit": "보내기"
+  },
+  "login": {
+    "title": "로그인",
+    "email": "이메일",
+    "password": "비밀번호",
+    "submit": "로그인"
+  },
+  "register": {
+    "title": "회원가입",
+    "name": "이름",
+    "email": "이메일",
+    "password": "비밀번호",
+    "submit": "회원가입"
+  },
+  "chat": {
+    "title": "채팅",
+    "send": "보내기",
+    "placeholder": "메시지를 입력하세요..."
+  },
+  "dashboard": {
+    "title": "관리 대시보드",
+    "welcome": "환영합니다"
+  },
+  "testimonials": {
+    "empty": "아직 등록된 이용후기가 없습니다"
+  },
+  "edit": "수정",
+  "add": "추가",
+  "delete": "삭제",
+  "loading": "로딩 중...",
+  "not_found": "찾을 수 없습니다",
+  "footer": {
+    "rights_reserved": "모든 권리 보유."
+  },
+  "admin": {
+    "contact_settings": {
+      "title": "연락처 정보",
+      "phone": "전화번호",
+      "email": "이메일",
+      "map_url": "Google Maps 주소",
+      "address": "주소",
+      "social_links": "소셜 링크",
+      "social_name": "소셜 이름",
+      "social_url": "링크 URL",
+      "saved_successfully": "성공적으로 저장되었습니다",
+      "save_error": "저장 중 오류 발생",
+      "error_loading_settings": "정보를 불러올 수 없습니다",
+      "no_socials": "등록된 소셜 링크가 없습니다",
+      "social_link_required": "플랫폼 및 링크는 비워둘 수 없습니다"
+    }
+  }
+}

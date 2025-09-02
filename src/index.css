@@ -1,0 +1,64 @@
+/* 📁 src/index.css */
+
+/* Tailwind CSS */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Slick carousel CSS (tildeгүй, стандарт импорт) */
+@import "slick-carousel/slick/slick.css";
+@import "slick-carousel/slick/slick-theme.css";
+
+/* Google Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
+
+/* Custom Global Styles */
+body {
+  font-family: "Inter", sans-serif;
+  background-color: #f8fafc; /* light mode background */
+  color: #1e293b; /* primary text color */
+}
+
+.dark body {
+  background-color: #1e293b; /* dark mode bg (slate-800) */
+  color: #f1f5f9; /* text-slate-100 */
+}
+
+/* React Quill editor customizations */
+.ql-container.ql-snow {
+  border: none;
+  border-radius: 0.5rem;
+  font-family: inherit;
+  background-color: white;
+  color: black;
+}
+
+.dark .ql-container.ql-snow {
+  background-color: #1e293b;
+  color: #f1f5f9;
+}
+
+.ql-toolbar.ql-snow {
+  border: none;
+  border-bottom: 1px solid #cbd5e1; /* slate-200 */
+}
+
+.dark .ql-toolbar.ql-snow {
+  background-color: #334155; /* slate-700 */
+  border-bottom: 1px solid #475569;
+}
+
+/* Toolbar icon color - Dark mode */
+.dark .ql-toolbar button,
+.dark .ql-toolbar .ql-picker-label,
+.dark .ql-toolbar .ql-picker-item {
+  color: #e2e8f0 !important; /* slate-200 */
+  fill: #e2e8f0 !important;
+}
+
+.dark .ql-toolbar button:hover,
+.dark .ql-toolbar .ql-picker-label:hover,
+.dark .ql-toolbar .ql-picker-item:hover {
+  color: #facc15 !important; /* yellow-400 */
+  fill: #facc15 !important;
+}
