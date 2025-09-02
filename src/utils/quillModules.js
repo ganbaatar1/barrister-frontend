@@ -1,0 +1,23 @@
+// src/utils/quillModules.js
+export const quillModules = {
+  toolbar: [
+    [{ header: [1, 2, 3, false] }],
+    ['bold', 'italic', 'underline', 'strike'],
+    [{ list: 'ordered' }, { list: 'bullet' }],
+    [{ align: [] }],
+    [{ color: [] }, { background: [] }],
+    ['link'],
+    ['clean'],
+  ],
+};
+
+export const quillFormats = [
+  'header',
+  'bold','italic','underline','strike',
+  'list','indent',
+  'align',
+  'color','background',
+  'link',
+];
+
+export default quillModules;
