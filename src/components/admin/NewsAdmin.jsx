@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import ReactQuill from "react-quill-new";
-import "quill/dist/quill.snow.css";
+import "react-quill-new/dist/quill.snow.css";
 import toast from "react-hot-toast";
 
 import {
@@ -17,25 +17,37 @@ import {
 import { uploadMedia } from "../../api/media";
 
 // Локал /uploads болон бүрэн https URL-уудыг зөв харуулах жижиг туслагч
-function resolveMediaUrl(u) {
+import axiosInstance from "../../api/axiosInstance";
+ const API_BASE =
+   (axiosInstance?.defaults?.baseURL || "").replace(/\/+$/, "");
+
+ function resolveMediaUrl(u) {
   if (!u) return "";
-  if (/^https?:\/\//i.test(u)) return u; // Cloudinary гэх мэт бүрэн URL
-  if (u.startsWith("/uploads")) return `http://localhost:5050${u}`; // dev backend static
-  return u;
-}
+   if (/^https?:\/\//i.test(u)) return u;               // Cloudinary гэх мэт
+   if (u.startsWith("/uploads")) return `${API_BASE}${u}`; // prod/dev аль ч үед
+   return u;
+ }
 
 // Quill тохиргоо
 const quillModules = {
   toolbar: [
     [{ header: [1, 2, 3, false] }],
-    ["bold", "italic", "underline"],
+     ["bold", "italic", "underline", "strike"],
     [{ list: "ordered" }, { list: "bullet" }],
+    [{ align: [] }],
+    [{ color: [] }, { background: [] }],
     ["link"],
     ["clean"],
   ],
 };
-const quillFormats = ["header", "bold", "italic", "underline", "list", "bullet", "link"];
-
+const quillFormats = [
+  "header",
+  "bold", "italic", "underline", "strike",
+  "list", "indent",
+  "align",
+  "color", "background",
+  "link",
+];
 export default function NewsAdmin() {
   const [items, setItems] = useState([]);
   const [loadingList, setLoadingList] = useState(false);
@@ -84,7 +96,9 @@ export default function NewsAdmin() {
     if (!file) return;
     setUploading(true);
     try {
-      const [m] = await uploadMedia({ files: [file], section: "news" }); // {url, public_id, ...}
+      const out = await uploadMedia({ files: [file], section: "news" });
+      const m = Array.isArray(out) ? out[0] : out?.[0] || out;
+      if (!m?.url) throw new Error("Invalid upload response");
       setField("image", m.url); // DB-д string URL хадгална
       toast.success("Зураг Cloudinary-д байршууллаа");
     } catch (err) {

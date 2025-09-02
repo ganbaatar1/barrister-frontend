@@ -7,36 +7,19 @@ const path = require("path");
 const fs = require("fs");
 const connectDB = require("./config/db");
 
+// 🚀 Firebase Admin-ийг ENV-ээс ачаалдаг цэвэр тохиргоо (файл бичихгүй)
+let admin;
+try {
+  admin = require("./config/firebaseAdmin"); // алдаа гарвал доорх catch руу унаад процессыг зогсооно
+} catch (e) {
+  console.error("❌ Firebase Admin initialize хийхэд алдаа:", e.message);
+  process.exit(1);
+}
+
 const app = express();
 
 // --- proxy ард ажиллах үед IP, протоколыг зөв авах ---
 app.set("trust proxy", 1);
-
-// ===== Firebase Admin SDK (BASE64 service account) =====
-const admin = require("firebase-admin");
-const base64ServiceAccount = process.env.FIREBASE_SERVICE_ACCOUNT_BASE64;
-
-if (!base64ServiceAccount) {
-  console.error("❌ FIREBASE_SERVICE_ACCOUNT_BASE64 environment variable байхгүй байна!");
-  process.exit(1);
-}
-
-let serviceAccount;
-try {
-  const decoded = Buffer.from(base64ServiceAccount, "base64").toString("utf8");
-  serviceAccount = JSON.parse(decoded);
-} catch (e) {
-  console.error("❌ FIREBASE_SERVICE_ACCOUNT_BASE64 задлах/JSON parse хийхэд алдаа:", e.message);
-  process.exit(1);
-}
-
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-  });
-  console.log("✅ Firebase Admin амжилттай initialize боллоо.");
-}
-// =======================================================
 
 // ✅ Security middleware
 app.use(
@@ -64,7 +47,7 @@ const isAllowedOrigin = (origin) => {
     const u = new URL(origin);
     const host = u.hostname;
     if (allowedExact.includes(origin)) return true;
-    if (host === "vercel.app" || host.endsWith(".vercel.app")) return true; // *.vercel.app
+    if (host.endsWith(".vercel.app")) return true; // *.vercel.app
     if (host === "localhost") return true;
     return false;
   } catch {
@@ -89,7 +72,7 @@ app.get("/", (req, res) => {
   res.send("✅ Backend сервер амжилттай ажиллаж байна!");
 });
 
-// ===== Static: /uploads-г нээх (миграци дууссаны дараа устгаж болно) =====
+// ===== Static: /uploads-г нээх (хэрэв түр хадгалалт хэрэглэж байвал үлдээгээрэй) =====
 const uploadsDir = path.join(__dirname, "uploads");
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
@@ -106,7 +89,6 @@ app.use("/api/contactSettings", require("./routes/contactSettings"));
 app.use("/api/status", require("./routes/statusRoutes"));
 
 // ✅ Media (Cloudinary) routes
-//  ← ./routes/media.js дотор upload_stream ашигладаг (өмнө явуулсан код)
 app.use("/api/media", require("./routes/media"));
 
 // 404
