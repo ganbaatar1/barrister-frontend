@@ -1,3 +1,4 @@
+// src/components/admin/TestimonialAdmin.jsx
 import { useEffect, useState } from "react";
 import {
   getTestimonials,
@@ -8,38 +9,37 @@ import {
 import { toast } from "react-toastify";
 import { uploadMedia } from "../../api/media";
 
-// /uploads (локал dev) болон бүрэн URL (Cloudinary)-ыг зөв харуулах жижиг туслагч
+// /uploads болон бүрэн URL-уудыг зөв харуулах
 function resolveImageUrl(u) {
   if (!u) return "";
   const raw = typeof u === "string" ? u : u.url;
   if (!raw) return "";
-  if (/^https?:\/\//i.test(raw)) return raw;            // Cloudinary эсвэл бүрэн URL
-  if (raw.startsWith("/uploads")) return `http://localhost:5050${raw}`; // backend static
-  if (raw.startsWith("uploads")) return `http://localhost:5050/${raw}`;
-  return raw;
+  if (/^https?:\/\//i.test(raw)) return raw; // Cloudinary
+  return raw; // шаардлагатай бол API_BASE-г нэмэх боломжтой
 }
 
 function TestimonialAdmin() {
   const [testimonials, setTestimonials] = useState([]);
-  const [formData, setFormData] = useState({
-    name: "",
-    message: "",
-    image: "",    // Cloudinary url (string) эсвэл хоосон
-  });
-  const [previewImage, setPreviewImage] = useState(null);
-  const [editId, setEditId] = useState(null);
-  const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [editId, setEditId] = useState(null);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
 
-  useEffect(() => {
-    fetchTestimonials();
-  }, []);
+  const [formData, setFormData] = useState({
+    isOrganization: false,
+    name: "",
+    organization: "",
+    message: "",
+    occupation: "",
+    image: "",   // хувь хүний зураг
+    orgLogo: "", // байгууллагын лого
+  });
 
   const fetchTestimonials = async () => {
     setLoading(true);
     try {
       const res = await getTestimonials();
-      setTestimonials(res.data || []);
+      setTestimonials(Array.isArray(res?.data) ? res.data : []);
     } catch (err) {
       console.error(err);
       toast.error("Сэтгэгдлийг татаж чадсангүй");
@@ -48,81 +48,67 @@ function TestimonialAdmin() {
     }
   };
 
-  // ✅ Зургийг серверээр дамжуулан Cloudinary-д байршуулна
-  const handleFileChange = async (e) => {
+  useEffect(() => { fetchTestimonials(); }, []);
+
+  // Хувь хүний зураг upload → Cloudinary
+  const handlePhotoChange = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setUploading(true);
+    setUploadingPhoto(true);
     try {
-      // түр preview (local blob) харуулж болно
-      setPreviewImage(URL.createObjectURL(file));
-
-      const [m] = await uploadMedia({ files: [file], section: "testimonials" }); // {url, public_id, ...}
+      const [m] = await uploadMedia({ files: [file], section: "testimonials" });
       setFormData((p) => ({ ...p, image: m.url }));
-      setPreviewImage(m.url); // Cloudinary-ийн бодит URL-руу шилжүүлье
-      toast.success("Зураг Cloudinary-д байршууллаа");
+      toast.success("Зураг байршууллаа");
     } catch (err) {
       console.error(err);
       toast.error("Зураг байршуулалт амжилтгүй");
-      setPreviewImage(null);
     } finally {
-      e.target.value = "";
-      setUploading(false);
+      setUploadingPhoto(false);
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // Байгууллагын лого upload → Cloudinary
+  const handleLogoChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingLogo(true);
     try {
-      if (!formData.name || !formData.message) {
-        toast.error("Нэр болон сэтгэгдэл шаардлагатай");
-        return;
-      }
-
-      // ✨ JSON payload илгээнэ — image нь Cloudinary URL (string)
-      const payload = {
-        name: formData.name,
-        message: formData.message,
-        image: formData.image || "", // хоосон байж болно
-      };
-
-      if (editId) {
-        await updateTestimonial(editId, payload);
-        toast.success("Сэтгэгдэл шинэчлэгдлээ");
-      } else {
-        await createTestimonial(payload);
-        toast.success("Шинэ сэтгэгдэл нэмэгдлээ");
-      }
-
-      resetForm();
-      fetchTestimonials();
+      const [m] = await uploadMedia({ files: [file], section: "testimonials" });
+      setFormData((p) => ({ ...p, orgLogo: m.url }));
+      toast.success("Лого байршууллаа");
     } catch (err) {
       console.error(err);
-      toast.error("Хадгалах үед алдаа гарлаа");
+      toast.error("Лого байршуулалт амжилтгүй");
+    } finally {
+      setUploadingLogo(false);
     }
   };
 
   const resetForm = () => {
-    setFormData({ name: "", message: "", image: "" });
-    setPreviewImage(null);
+    setFormData({
+      isOrganization: false,
+      name: "",
+      organization: "",
+      message: "",
+      occupation: "",
+      image: "",
+      orgLogo: "",
+    });
     setEditId(null);
-    setUploading(false);
   };
 
   const handleEdit = (item) => {
-    const img = typeof item.image === "string" ? item.image : item.image?.url || "";
     setFormData({
+      isOrganization: !!item.isOrganization,
       name: item.name || "",
+      organization: item.organization || "",
       message: item.message || "",
-      image: img,
+      occupation: item.occupation || "",
+      image: item.photo || "",
+      orgLogo: item.orgLogo || "",
     });
-    setPreviewImage(resolveImageUrl(img) || null);
     setEditId(item._id);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleDelete = async (id) => {
@@ -137,89 +123,158 @@ function TestimonialAdmin() {
     }
   };
 
-  const removeImage = () => {
-    setFormData((p) => ({ ...p, image: "" }));
-    setPreviewImage(null);
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      // multipart payload (файл байхгүй ч текст талбарууд явна)
+      const payload = new FormData();
+      payload.set("isOrganization", String(formData.isOrganization));
+      payload.set("name", formData.name);
+      payload.set("organization", formData.organization);
+      payload.set("message", formData.message);
+      payload.set("occupation", formData.occupation);
+
+      // Хэрэв файлээр илгээх бол: payload.append("photo", file) гэх мэтээр нэмнэ.
+
+      const fn = editId ? updateTestimonial : createTestimonial;
+      await fn(editId || undefined, payload);
+      toast.success(editId ? "Шинэчиллээ" : "Амжилттай үүслээ");
+      resetForm();
+      fetchTestimonials();
+    } catch (err) {
+      console.error(err);
+      toast.error("Хадгалах үед алдаа гарлаа");
+    }
   };
 
   return (
-    <div className="p-6 space-y-6">
-      <h2 className="text-xl font-bold">Сэтгэгдэл удирдлага</h2>
-
-      <form onSubmit={handleSubmit} className="space-y-3 bg-white p-4 rounded shadow">
-        <input
-          type="text"
-          name="name"
-          placeholder="Нэр"
-          value={formData.name}
-          onChange={handleChange}
-          required
-          className="p-2 border rounded w-full"
-        />
-        <textarea
-          name="message"
-          placeholder="Сэтгэгдэл"
-          value={formData.message}
-          onChange={handleChange}
-          required
-          className="p-2 border rounded w-full"
-        />
-
-        <div className="space-y-2">
+    <div className="p-4 space-y-6">
+      <form onSubmit={onSubmit} className="space-y-4 border p-4 rounded">
+        <div className="flex items-center gap-2">
           <input
-            type="file"
-            name="image"
-            accept="image/*,video/*"
-            onChange={handleFileChange}
-            className="p-2 border rounded w-full"
+            id="isOrganization"
+            type="checkbox"
+            checked={formData.isOrganization}
+            onChange={(e) => setFormData(p => ({ ...p, isOrganization: e.target.checked }))}
           />
-          {uploading && <p className="text-xs text-gray-500">Зураг байршуулж байна…</p>}
-          {previewImage && (
-            <div className="flex items-center gap-3">
-              <img src={previewImage} alt="Preview" className="max-h-32 mt-1 rounded shadow" />
-              <button type="button" onClick={removeImage} className="text-red-600">
-                Зураг арилгах
-              </button>
-            </div>
-          )}
+          <label htmlFor="isOrganization">Байгууллагыг төлөөлж байна</label>
         </div>
 
-        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded" disabled={uploading}>
-          {editId ? "Шинэчлэх" : "Нэмэх"}
-        </button>
+        {formData.isOrganization && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block mb-1">Байгууллагын нэр</label>
+              <input
+                className="w-full border px-3 py-2 rounded"
+                value={formData.organization}
+                onChange={(e) => setFormData(p => ({ ...p, organization: e.target.value }))}
+              />
+            </div>
+            <div>
+              <label className="block mb-1">Байгууллагын лого</label>
+              <input type="file" accept="image/*" onChange={handleLogoChange} />
+              {uploadingLogo && <div className="text-sm">Лого байршуулж байна…</div>}
+              {formData.orgLogo && (
+                <img
+                  src={resolveImageUrl(formData.orgLogo)}
+                  alt={formData.organization || ""}  // decorative бол хоосон alt
+                  className="h-16 mt-2 object-contain"
+                />
+              )}
+            </div>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block mb-1">Нэр</label>
+            <input
+              className="w-full border px-3 py-2 rounded"
+              value={formData.name}
+              onChange={(e) => setFormData(p => ({ ...p, name: e.target.value }))}
+              required
+            />
+          </div>
+          <div>
+            <label className="block mb-1">Албан тушаал/Төрөл</label>
+            <input
+              className="w-full border px-3 py-2 rounded"
+              value={formData.occupation}
+              onChange={(e) => setFormData(p => ({ ...p, occupation: e.target.value }))}
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block mb-1">Сэтгэгдэл</label>
+          <textarea
+            className="w-full border px-3 py-2 rounded"
+            value={formData.message}
+            onChange={(e) => setFormData(p => ({ ...p, message: e.target.value }))}
+            required
+          />
+        </div>
+
+        {!formData.isOrganization && (
+          <div>
+            <label className="block mb-1">Хувь хүний зураг</label>
+            <input type="file" accept="image/*" onChange={handlePhotoChange} />
+            {uploadingPhoto && <div className="text-sm">Зураг байршуулж байна…</div>}
+            {formData.image && (
+              <img
+                src={resolveImageUrl(formData.image)}
+                alt=""  // thumbnail тул гоёлын зураг — хоосон alt
+                className="h-16 mt-2 object-cover rounded"
+              />
+            )}
+          </div>
+        )}
+
+        <div className="flex gap-2">
+          <button className="bg-blue-600 text-white px-4 py-2 rounded">
+            {editId ? "Шинэчлэх" : "Нэмэх"}
+          </button>
+          <button type="button" className="bg-gray-200 px-4 py-2 rounded" onClick={resetForm}>
+            Цэвэрлэх
+          </button>
+        </div>
       </form>
 
-      <h3 className="text-lg font-bold">Нийт сэтгэгдэл</h3>
-
-      {loading ? (
-        <p className="text-gray-500">Ачаалж байна…</p>
-      ) : (
+      {!loading && (
         <div className="grid md:grid-cols-2 gap-4">
-          {testimonials.map((t) => {
-            const img = resolveImageUrl(t.image);
-            return (
-              <div key={t._id} className="bg-white dark:bg-gray-800 border p-4 rounded shadow space-y-2">
-                <p className="text-lg font-semibold">{t.name}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-300">{t.message}</p>
-                {img ? (
-                  <img
-                    src={img}
-                    alt={t.name}
-                    className="h-24 w-24 object-cover rounded-full"
-                    onError={(e) => (e.currentTarget.style.display = "none")}
-                  />
-                ) : null}
-                <div className="flex gap-2 pt-2">
-                  <button onClick={() => handleEdit(t)} className="bg-yellow-500 text-white px-3 py-1 rounded">
-                    Засах
-                  </button>
-                  <button onClick={() => handleDelete(t._id)} className="bg-red-600 text-white px-3 py-1 rounded">
-                    Устгах
-                  </button>
+          {testimonials.map((t) => (
+            <div key={t._id} className="border rounded p-4 space-y-2">
+              <div className="flex items-center gap-3">
+                {t.isOrganization ? (
+                  t.orgLogo ? (
+                    <img
+                      src={resolveImageUrl(t.orgLogo)}
+                      alt={t.organization || ""}   // мэдээлэлгүй бол хоосон alt үлдээнэ
+                      className="h-10 object-contain"
+                    />
+                  ) : null
+                ) : (
+                  t.photo ? (
+                    <img
+                      src={resolveImageUrl(t.photo)}
+                      alt={t.name || ""}  // "photo/image" гэх үг хэрэглэхгүй
+                      className="h-10 w-10 object-cover rounded-full"
+                    />
+                  ) : null
+                )}
+                <div className="font-semibold">
+                  {t.isOrganization && t.organization ? `${t.organization} — ` : ""}
+                  {t.name}
                 </div>
               </div>
-            );
-          })}
+              <div className="text-sm text-gray-700 whitespace-pre-line">{t.message}</div>
+              {t.occupation && <div className="text-xs text-gray-500">{t.occupation}</div>}
+              <div className="flex gap-2">
+                <button onClick={() => handleEdit(t)} className="bg-amber-500 text-white px-3 py-1 rounded">Засах</button>
+                <button onClick={() => handleDelete(t._id)} className="bg-red-600 text-white px-3 py-1 rounded">Устгах</button>
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>

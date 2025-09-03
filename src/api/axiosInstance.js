@@ -1,54 +1,45 @@
-// 📁 src/api/axiosInstance.js
+// src/api/axiosInstance.js
 import axios from "axios";
 
-const FALLBACK = "http://localhost:5050/api";
-const API_BASE =
-  (typeof window !== "undefined" ? `${window.location.origin}/api` : "") ||
-  process.env.REACT_APP_API_BASE_URL?.trim() ||
-  FALLBACK;
+/**
+ * DEV: CRA proxy ашиглахдаа baseURL = "/api"
+ * PROD: REACT_APP_API_BASE (эсвэл REACT_APP_API_BASE_URL) ашиглана
+ *  └─ Жишээ: REACT_APP_API_BASE=https://barrister-backend.onrender.com/api
+ */
+const envBase =
+  (process.env.REACT_APP_API_BASE || process.env.REACT_APP_API_BASE_URL || "").trim();
+
+const API_BASE = envBase || "/api"; // env байхгүй бол DEV proxy /api руу дамжина
 
 const axiosInstance = axios.create({
   baseURL: API_BASE,
-  withCredentials: false,
-  timeout: 60000,
+  withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+  },
+  timeout: 20000,
 });
 
-// Helper
-const isFormData = (data) =>
-  typeof FormData !== "undefined" && data instanceof FormData;
-
-axiosInstance.interceptors.request.use((config) => {
-  const token = localStorage.getItem("accessToken");
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-
-  // ❗ ЗӨВ: FormData бол Content-Type-г бүр мөсөн орхи (browser/axios өөрөө boundary тавина)
-  if (isFormData(config.data)) {
-    if (config.headers && "Content-Type" in config.headers) {
-      delete config.headers["Content-Type"];
+// 🔐 Authorization header шургуулна (локал storage-оос)
+axiosInstance.interceptors.request.use(
+  (config) => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (token) config.headers.Authorization = `Bearer ${token}`;
+    } catch {
+      /* noop */
     }
-  } else {
-    // JSON payload үед л JSON header тавина (GET/DELETE-д хэрэггүй)
-    const method = (config.method || "get").toLowerCase();
-    if (["post", "put", "patch"].includes(method)) {
-      if (!config.headers || !config.headers["Content-Type"]) {
-        config.headers = { ...(config.headers || {}), "Content-Type": "application/json" };
-      }
-    }
-  }
-  return config;
-});
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
+// 🔁 Хариу интерсептор (шаардлагатай бол 401 дээр навигаци хийх боломжтой)
 axiosInstance.interceptors.response.use(
   (res) => res,
-  (error) => {
-    const status = error?.response?.status;
-    const msg =
-      error?.response?.data?.message ||
-      error?.response?.data?.error ||
-      error?.message ||
-      "Network / CORS error";
-    console.error(`[API ${status || "ERR"}] ${msg}`, error?.response?.data || error);
-    return Promise.reject(error);
+  (err) => {
+    // Жишээ: if (err?.response?.status === 401) window.location.href = "/login";
+    return Promise.reject(err);
   }
 );
 
